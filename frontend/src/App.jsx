@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Brain, Activity, Cpu, HardDrive } from "lucide-react";
 import ConnectionScreen from "./components/ConnectionScreen";
 import HardwareCard from "./components/HardwareCard";
+import LogsViewer from "./components/LogsViewer";
 
 function App() {
   const [connectedUrl, setConnectedUrl] = useState(null);
@@ -157,6 +158,9 @@ function App() {
               <li>⏳ Language tuning wizard (coming soon)</li>
             </ul>
           </div>
+
+          {/* Logs Viewer */}
+          <LogsViewer subgenUrl={connectedUrl} />
         </div>
       </main>
 

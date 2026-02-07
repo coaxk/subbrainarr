@@ -78,10 +78,11 @@ async def websocket_endpoint(websocket: WebSocket):
         manager.disconnect(websocket)
 
 # Include routers
-from routers import connection, hardware
+from routers import connection, hardware, logs
 
 app.include_router(connection.router, prefix="/api/connection", tags=["connection"])
 app.include_router(hardware.router, prefix="/api/hardware", tags=["hardware"])
+app.include_router(logs.router, prefix="/api/logs", tags=["logs"])
 
 
 if __name__ == "__main__":
