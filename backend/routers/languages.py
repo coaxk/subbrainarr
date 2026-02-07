@@ -21,6 +21,14 @@ class LanguageSettings(BaseModel):
 
 # Default optimized settings for 18 languages
 DEFAULT_LANGUAGES = {
+    "en": {
+        "code": "en",
+        "name": "English",
+        "flag": "🇬🇧",
+        "patience": 1.0,
+        "length_penalty": 1.0,
+        "recommendation": "Transcribe mode - generates English subtitles from English audio"
+    },
     "ja": {
         "code": "ja",
         "name": "Japanese",
