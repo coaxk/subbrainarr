@@ -68,7 +68,7 @@ function App() {
             <div className="flex items-center gap-3">
               <Brain className="w-8 h-8 text-primary" />
               <div>
-                <h1 className="text-2xl font-bold">Subbrainarr</h1>
+                <h1 className="text-2xl font-bold">SubBrainArr</h1>
                 <p className="text-sm text-muted-foreground">
                   Subgen, but with a brain
                 </p>

@@ -67,7 +67,11 @@ export default function ConnectionScreen({ onConnected }) {
         {/* Header */}
         <div className="text-center mb-8">
           <Brain className="w-16 h-16 text-primary mx-auto mb-4" />
-          <h1 className="text-3xl font-bold mb-2">Connect to Subgen</h1>
+          <h1 className="text-3xl font-bold mb-2">
+            <span className="text-primary">SubBrain</span>
+            <span className="text-foreground">Arr</span>
+          </h1>
+          <p className="text-sm text-muted-foreground mb-4">Connect to Subgen</p>>
           <p className="text-muted-foreground">
             Let's find your Subgen instance
           </p>
