@@ -283,4 +283,100 @@ async def get_recommendations():
         "explanation": hw.recommendation
     }
     
+@router.get("/smart-recommendations")
+async def get_smart_recommendations():
+    """
+    Generate smart recommendations based on hardware capabilities
+    """
+    hw = await detect_hardware()
+    recommendations = []
+    
+    # GPU-based recommendations
+    if hw.device_type == "cuda" and hw.total_memory:
+        vram = hw.total_memory
+        
+        if vram >= 16:
+            recommendations.append({
+                "type": "performance",
+                "icon": "🚀",
+                "title": "Enable Concurrent Processing",
+                "description": f"Your GPU has {vram}GB VRAM - you can process 2-3 files simultaneously!",
+                "action": "Go to Settings → Performance"
+            })
+        
+        if vram >= 12 and vram < 16:
+            recommendations.append({
+                "type": "optimization",
+                "icon": "✨",
+                "title": "Try Higher Beam Size",
+                "description": "Your GPU can handle beam_size: 6 for ~10% better quality",
+                "action": "Go to Settings → Model & Compute"
+            })
+        
+        if vram < 8:
+            recommendations.append({
+                "type": "warning",
+                "icon": "⚠️",
+                "title": "Consider Medium Model",
+                "description": f"With {vram}GB VRAM, medium model + int8 will be more stable",
+                "action": "Go to Settings → Model & Compute"
+            })
+    
+    # CPU recommendations
+    if hw.device_type == "cpu":
+        if hw.cpu_threads and hw.cpu_threads >= 12:
+            recommendations.append({
+                "type": "optimization",
+                "icon": "💪",
+                "title": "Strong CPU Detected",
+                "description": f"{hw.cpu_threads} threads can handle medium model efficiently overnight",
+                "action": "Consider batch processing"
+            })
+        else:
+            recommendations.append({
+                "type": "info",
+                "icon": "💡",
+                "title": "CPU Processing Active",
+                "description": "For faster processing, consider adding a GPU",
+                "action": None
+            })
+    
+    # RAM recommendations
+    if hw.ram_available and hw.ram_available < 8:
+        recommendations.append({
+            "type": "warning",
+            "icon": "⚠️",
+            "title": "Low Available RAM",
+            "description": f"Only {hw.ram_available}GB RAM free - close other applications",
+            "action": None
+        })
+    
+    # Storage recommendations
+    if hw.storage and hw.storage.free < 50:
+        recommendations.append({
+            "type": "warning",
+            "icon": "💾",
+            "title": "Low Disk Space",
+            "description": f"Only {hw.storage.free}GB free - consider cleanup",
+            "action": None
+        })
+    
+    # Always add a general tip
+    recommendations.append({
+        "type": "tip",
+        "icon": "🎯",
+        "title": "Per-Language Optimization",
+        "description": "Each of your 19 languages has optimized settings - check Language Cards",
+        "action": "Scroll to Language Configurations"
+    })
+    
+    return {
+        "recommendations": recommendations,
+        "hardware_summary": {
+            "device": hw.device_type,
+            "name": hw.device_name,
+            "vram": hw.total_memory,
+            "ram": hw.ram_total
+        }
+    }
     return recommendations

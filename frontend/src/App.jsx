@@ -5,6 +5,7 @@ import HardwareCard from "./components/HardwareCard";
 import LogsViewer from "./components/LogsViewer";
 import LanguageCards from "./components/LanguageCards";
 import SettingsPanel from "./components/SettingsPanel";
+import RecommendationsCard from "./components/RecommendationsCard";
 
 function App() {
   const [connectedUrl, setConnectedUrl] = useState(null);
@@ -122,6 +123,9 @@ function App() {
               <span className="font-mono text-primary">{connectedUrl}</span>
             </div>
           </div>
+
+          {/* Smart Recommendations */}
+          <RecommendationsCard />
 
           {/* Hardware Detection */}
           <HardwareCard />
