@@ -77,12 +77,11 @@ async def websocket_endpoint(websocket: WebSocket):
     except WebSocketDisconnect:
         manager.disconnect(websocket)
 
-# Will add router includes here:
-# app.include_router(connection.router, prefix="/api/connection", tags=["connection"])
-# app.include_router(hardware.router, prefix="/api/hardware", tags=["hardware"])
-# app.include_router(queue.router, prefix="/api/queue", tags=["queue"])
-# app.include_router(languages.router, prefix="/api/languages", tags=["languages"])
-# app.include_router(settings.router, prefix="/api/settings", tags=["settings"])
+# Include routers
+from routers import connection
+
+app.include_router(connection.router, prefix="/api/connection", tags=["connection"])
+
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 9001))
