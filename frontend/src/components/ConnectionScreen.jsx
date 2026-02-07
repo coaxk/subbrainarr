@@ -120,6 +120,24 @@ export default function ConnectionScreen({ onConnected }) {
                     )}
                     <div>
                       <div className="font-mono text-sm">{instance.url}</div>
+                      {instance.success && instance.version && (
+                        <div className="flex items-center gap-2 text-xs mt-1">
+                          <span className="text-muted-foreground">
+                            v{instance.version}
+                          </span>
+                          {instance.is_outdated && (
+                            <span className="text-yellow-500">
+                              ⚠️ Update available
+                            </span>
+                          )}
+                          {!instance.is_outdated &&
+                            instance.version !== "Unknown" && (
+                              <span className="text-green-500">
+                                ✓ Up to date
+                              </span>
+                            )}
+                        </div>
+                      )}
                       {instance.error && (
                         <div className="text-xs text-muted-foreground">
                           {instance.error}

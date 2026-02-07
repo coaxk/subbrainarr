@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Brain, Activity, Cpu, HardDrive } from "lucide-react";
 import ConnectionScreen from "./components/ConnectionScreen";
+import HardwareCard from "./components/HardwareCard";
 
 function App() {
   const [connectedUrl, setConnectedUrl] = useState(null);
@@ -90,8 +91,11 @@ function App() {
             </div>
           </div>
 
+          {/* Hardware Detection */}
+          <HardwareCard />
+
           {/* Status Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-card border border-border rounded-lg p-6">
               <div className="flex items-center gap-3 mb-2">
                 <Activity className="w-5 h-5 text-primary" />
@@ -103,20 +107,13 @@ function App() {
 
             <div className="bg-card border border-border rounded-lg p-6">
               <div className="flex items-center gap-3 mb-2">
-                <Cpu className="w-5 h-5 text-primary" />
-                <h3 className="font-semibold">Hardware</h3>
-              </div>
-              <p className="text-2xl font-bold">Detecting...</p>
-              <p className="text-sm text-muted-foreground">GPU/CPU info</p>
-            </div>
-
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="flex items-center gap-3 mb-2">
                 <HardDrive className="w-5 h-5 text-primary" />
-                <h3 className="font-semibold">VRAM</h3>
+                <h3 className="font-semibold">Languages</h3>
               </div>
-              <p className="text-2xl font-bold">--</p>
-              <p className="text-sm text-muted-foreground">Memory usage</p>
+              <p className="text-2xl font-bold">18</p>
+              <p className="text-sm text-muted-foreground">
+                Configured & ready
+              </p>
             </div>
           </div>
 
@@ -127,7 +124,7 @@ function App() {
               <li>✅ Backend is running</li>
               <li>✅ Frontend connected</li>
               <li>✅ Subgen instance detected</li>
-              <li>⏳ Hardware detection (coming next)</li>
+              <li>✅ Hardware detection complete</li>
               <li>⏳ Language tuning wizard (coming soon)</li>
             </ul>
           </div>

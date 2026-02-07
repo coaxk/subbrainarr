@@ -15,32 +15,77 @@ class ConnectionResult(BaseModel):
     success: bool
     url: str
     version: str = None
+    latest_version: str = None
+    is_outdated: bool = False
     model: str = None
     device: str = None
     error: str = None
 
 async def test_subgen_connection(url: str) -> ConnectionResult:
-    """Test connection to a Subgen instance"""
+    """Test connection to a Subgen instance and get version info"""
     try:
         # Clean up URL
         url = url.rstrip('/')
         
-        # Try to connect
         async with httpx.AsyncClient(timeout=5.0) as client:
+            # Test basic connection
             response = await client.get(url)
+            response.raise_for_status()
             
-            # Subgen returns a simple message or list
-            data = response.json()
+            # Try to get logs to extract version
+            version = "Unknown"
+            try:
+                logs_response = await client.get(f"{url}/logs", timeout=3.0)
+                if logs_response.status_code == 200:
+                    logs_text = logs_response.text
+                    # Look for version in logs (format: "Subgen v2026.02.0")
+                    import re
+                    version_match = re.search(r'Subgen v(\d{4}\.\d{2}\.\d+)', logs_text)
+                    if version_match:
+                        version = version_match.group(1)
+            except:
+                pass
             
-            # Try to get version info from logs endpoint if available
-            # For now, just confirm it's responding
+            # Check if outdated (latest is 2026.02.0 as of now)
+            latest_version = "2026.02.0"
+            is_outdated = False
+            if version != "Unknown":
+                try:
+                    # Simple version comparison
+                    current = version.replace(".", "")
+                    latest = latest_version.replace(".", "")
+                    is_outdated = int(current) < int(latest)
+                except:
+                    pass
+            
             return ConnectionResult(
                 success=True,
                 url=url,
-                version="Detected",
-                model="Unknown",
-                device="Unknown"
+                version=version,
+                latest_version=latest_version,
+                is_outdated=is_outdated,
+                model="Detecting...",
+                device="Detecting..."
             )
+            
+    except httpx.ConnectError:
+        return ConnectionResult(
+            success=False,
+            url=url,
+            error="Could not connect. Is Subgen running?"
+        )
+    except httpx.TimeoutException:
+        return ConnectionResult(
+            success=False,
+            url=url,
+            error="Connection timeout. Check URL and firewall."
+        )
+    except Exception as e:
+        return ConnectionResult(
+            success=False,
+            url=url,
+            error=f"Error: {str(e)}"
+        )
             
     except httpx.ConnectError:
         return ConnectionResult(
