@@ -4,6 +4,7 @@ import ConnectionScreen from "./components/ConnectionScreen";
 import HardwareCard from "./components/HardwareCard";
 import LogsViewer from "./components/LogsViewer";
 import LanguageCards from "./components/LanguageCards";
+import SettingsPanel from "./components/SettingsPanel";
 
 function App() {
   const [connectedUrl, setConnectedUrl] = useState(null);
@@ -174,6 +175,9 @@ function App() {
 
           {/* Language Cards */}
           <LanguageCards />
+
+          {/* Settings Panel */}
+          <SettingsPanel />
 
           {/* Logs Viewer */}
           <LogsViewer subgenUrl={connectedUrl} />
