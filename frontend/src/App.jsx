@@ -3,6 +3,7 @@ import { Brain, Activity, Cpu, HardDrive } from "lucide-react";
 import ConnectionScreen from "./components/ConnectionScreen";
 import HardwareCard from "./components/HardwareCard";
 import LogsViewer from "./components/LogsViewer";
+import LanguageCards from "./components/LanguageCards";
 
 function App() {
   const [connectedUrl, setConnectedUrl] = useState(null);
@@ -158,6 +159,21 @@ function App() {
               <li>⏳ Language tuning wizard (coming soon)</li>
             </ul>
           </div>
+
+          {/* Next Steps */}
+          <div className="bg-card border border-border rounded-lg p-6">
+            <h3 className="text-lg font-semibold mb-4">🚀 Next Steps</h3>
+            <ul className="space-y-2 text-muted-foreground">
+              <li>✅ Backend is running</li>
+              <li>✅ Frontend connected</li>
+              <li>✅ Subgen instance detected</li>
+              <li>✅ Hardware detection complete</li>
+              <li>⏳ Language tuning wizard (coming soon)</li>
+            </ul>
+          </div>
+
+          {/* Language Cards */}
+          <LanguageCards />
 
           {/* Logs Viewer */}
           <LogsViewer subgenUrl={connectedUrl} />
