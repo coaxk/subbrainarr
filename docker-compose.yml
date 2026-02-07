@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  # Example Subgen service (users should already have this)
+  # Uncomment if you want to run Subgen alongside for testing
+  # subgen:
+  #   image: mccloud/subgen:latest
+  #   container_name: subgen
+  #   restart: unless-stopped
+  #   networks:
+  #     - subgen-network
+  #   ports:
+  #     - "9007:9000"
+  #   environment:
+  #     - WHISPER_MODEL=large-v3
+  #     - TRANSCRIBE_DEVICE=cuda
+  #   # ... add your Subgen config here
+
+  subbrainarr:
+    image: coaxk/subbrainarr:latest
+    container_name: subbrainarr
+    restart: unless-stopped
+    networks:
+      - subgen-network
+    ports:
+      - "9008:9001"
+    environment:
+      # URL to your Subgen instance
+      - SUBGEN_URL=http://subgen:9000
+      # Optional: Set custom port
+      - PORT=9001
+    volumes:
+      # Store configuration and database
+      - ./subbrainarr-config:/app/config
+      # Optional: Share compose.yaml for auto-configuration
+      - ./compose.yaml:/app/host-compose.yaml:ro
+    depends_on:
+      - subgen
+    labels:
+      - "com.subbrainarr.description=The dashboard that gives Subgen a brain"
+      - "com.subbrainarr.version=1.0.0"
+
+networks:
+  subgen-network:
+    driver: bridge
+
+volumes:
+  subbrainarr-config:
+    driver: local
