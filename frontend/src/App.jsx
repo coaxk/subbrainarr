@@ -7,6 +7,7 @@ function App() {
   const [connectedUrl, setConnectedUrl] = useState(null);
   const [apiStatus, setApiStatus] = useState("checking");
   const [apiData, setApiData] = useState(null);
+  const [subgenInfo, setSubgenInfo] = useState(null);
 
   useEffect(() => {
     // Check backend connection
@@ -27,6 +28,20 @@ function App() {
     // Store in localStorage for persistence
     localStorage.setItem("subgen_url", url);
   };
+
+  // Fetch Subgen version info
+  useEffect(() => {
+    if (connectedUrl) {
+      fetch("/api/connection/test", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: connectedUrl }),
+      })
+        .then((res) => res.json())
+        .then((data) => setSubgenInfo(data))
+        .catch((err) => console.error("Failed to get Subgen info:", err));
+    }
+  }, [connectedUrl]);
 
   // Load saved connection on mount
   useEffect(() => {
@@ -57,11 +72,25 @@ function App() {
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-sm">
-                <div className="w-2 h-2 rounded-full bg-green-500" />
-                <span className="text-muted-foreground">
-                  Connected to {connectedUrl}
-                </span>
+              <div className="flex flex-col items-end gap-1">
+                <div className="flex items-center gap-2 text-sm">
+                  <div className="w-2 h-2 rounded-full bg-green-500" />
+                  <span className="text-muted-foreground">{connectedUrl}</span>
+                </div>
+                {subgenInfo && subgenInfo.version && (
+                  <div className="flex items-center gap-2 text-xs">
+                    <span className="text-muted-foreground">
+                      Subgen {subgenInfo.version}
+                    </span>
+                    {subgenInfo.is_outdated ? (
+                      <span className="text-yellow-500 font-medium">
+                        ⚠️ Update available
+                      </span>
+                    ) : (
+                      <span className="text-green-500">✓ Online</span>
+                    )}
+                  </div>
+                )}
               </div>
               <button
                 onClick={() => setConnectedUrl(null)}

@@ -27,29 +27,50 @@ async def test_subgen_connection(url: str) -> ConnectionResult:
         # Clean up URL
         url = url.rstrip('/')
         
-        async with httpx.AsyncClient(timeout=5.0) as client:
+        async with httpx.AsyncClient(timeout=10.0) as client:
             # Test basic connection
             response = await client.get(url)
             response.raise_for_status()
             
-            # Try to get logs to extract version
+            # Try multiple methods to get version
             version = "Unknown"
+            
+            # Method 1: Check if there's a version endpoint
             try:
-                logs_response = await client.get(f"{url}/logs", timeout=3.0)
-                if logs_response.status_code == 200:
-                    logs_text = logs_response.text
-                    # Look for version in logs (format: "Subgen v2026.02.0")
-                    import re
-                    version_match = re.search(r'Subgen v(\d{4}\.\d{2}\.\d+)', logs_text)
-                    if version_match:
-                        version = version_match.group(1)
+                version_response = await client.get(f"{url}/version", timeout=3.0)
+                if version_response.status_code == 200:
+                    version_data = version_response.json()
+                    if isinstance(version_data, dict) and 'version' in version_data:
+                        version = version_data['version']
             except:
                 pass
+            
+            # Method 2: Try to get Docker container logs (if accessible)
+            # This won't work from inside Docker, but document it for later
+            
+            # Method 3: Check common version patterns in response
+            if version == "Unknown":
+                try:
+                    # Some APIs return version in headers or response
+                    response_text = response.text.lower()
+                    if 'subgen' in response_text:
+                        # Try to extract version from text
+                        import re
+                        version_match = re.search(r'v?(\d{4}\.\d{2}\.\d+)', response_text)
+                        if version_match:
+                            version = version_match.group(1)
+                except:
+                    pass
+            
+            # For now, if we can't detect version, we'll show "Connected" instead of "Unknown"
+            if version == "Unknown":
+                version = "Connected"
             
             # Check if outdated (latest is 2026.02.0 as of now)
             latest_version = "2026.02.0"
             is_outdated = False
-            if version != "Unknown":
+            
+            if version not in ["Unknown", "Connected"]:
                 try:
                     # Simple version comparison
                     current = version.replace(".", "")
@@ -67,6 +88,25 @@ async def test_subgen_connection(url: str) -> ConnectionResult:
                 model="Detecting...",
                 device="Detecting..."
             )
+            
+    except httpx.ConnectError:
+        return ConnectionResult(
+            success=False,
+            url=url,
+            error="Could not connect. Is Subgen running?"
+        )
+    except httpx.TimeoutException:
+        return ConnectionResult(
+            success=False,
+            url=url,
+            error="Connection timeout. Check URL and firewall."
+        )
+    except Exception as e:
+        return ConnectionResult(
+            success=False,
+            url=url,
+            error=f"Error: {str(e)}"
+        )
             
     except httpx.ConnectError:
         return ConnectionResult(
