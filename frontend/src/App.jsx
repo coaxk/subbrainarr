@@ -6,6 +6,7 @@ import LogsViewer from "./components/LogsViewer";
 import LanguageCards from "./components/LanguageCards";
 import SettingsPanel from "./components/SettingsPanel";
 import RecommendationsCard from "./components/RecommendationsCard";
+import SmartScan from "./components/SmartScan";
 
 function App() {
   const [connectedUrl, setConnectedUrl] = useState(null);
@@ -14,7 +15,6 @@ function App() {
   const [subgenInfo, setSubgenInfo] = useState(null);
 
   useEffect(() => {
-    // Check backend connection
     fetch("/api/")
       .then((res) => res.json())
       .then((data) => {
@@ -29,11 +29,9 @@ function App() {
 
   const handleConnected = (url) => {
     setConnectedUrl(url);
-    // Store in localStorage for persistence
     localStorage.setItem("subgen_url", url);
   };
 
-  // Fetch Subgen version info
   useEffect(() => {
     if (connectedUrl) {
       fetch("/api/connection/test", {
@@ -47,7 +45,6 @@ function App() {
     }
   }, [connectedUrl]);
 
-  // Load saved connection on mount
   useEffect(() => {
     const savedUrl = localStorage.getItem("subgen_url");
     if (savedUrl) {
@@ -55,14 +52,12 @@ function App() {
     }
   }, []);
 
-  // Show connection screen if not connected to Subgen
   if (!connectedUrl) {
     return <ConnectionScreen onConnected={handleConnected} />;
   }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Header */}
       <header className="border-b border-border bg-card/50 backdrop-blur">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -107,10 +102,8 @@ function App() {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="space-y-6">
-          {/* Welcome Card */}
           <div className="bg-card border border-border rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-2">
               🎉 Connected to Subgen!
@@ -124,13 +117,9 @@ function App() {
             </div>
           </div>
 
-          {/* Smart Recommendations */}
           <RecommendationsCard />
-
-          {/* Hardware Detection */}
           <HardwareCard />
 
-          {/* Status Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-card border border-border rounded-lg p-6">
               <div className="flex items-center gap-3 mb-2">
@@ -146,49 +135,21 @@ function App() {
                 <HardDrive className="w-5 h-5 text-primary" />
                 <h3 className="font-semibold">Languages</h3>
               </div>
-              <p className="text-2xl font-bold">18</p>
+              <p className="text-2xl font-bold">19</p>
               <p className="text-sm text-muted-foreground">
                 Configured & ready
               </p>
             </div>
           </div>
 
-          {/* Next Steps */}
-          <div className="bg-card border border-border rounded-lg p-6">
-            <h3 className="text-lg font-semibold mb-4">🚀 Next Steps</h3>
-            <ul className="space-y-2 text-muted-foreground">
-              <li>✅ Backend is running</li>
-              <li>✅ Frontend connected</li>
-              <li>✅ Subgen instance detected</li>
-              <li>✅ Hardware detection complete</li>
-              <li>⏳ Language tuning wizard (coming soon)</li>
-            </ul>
-          </div>
+          <SmartScan subgenUrl={connectedUrl} />
 
-          {/* Next Steps */}
-          <div className="bg-card border border-border rounded-lg p-6">
-            <h3 className="text-lg font-semibold mb-4">🚀 Next Steps</h3>
-            <ul className="space-y-2 text-muted-foreground">
-              <li>✅ Backend is running</li>
-              <li>✅ Frontend connected</li>
-              <li>✅ Subgen instance detected</li>
-              <li>✅ Hardware detection complete</li>
-              <li>⏳ Language tuning wizard (coming soon)</li>
-            </ul>
-          </div>
-
-          {/* Language Cards */}
           <LanguageCards />
-
-          {/* Settings Panel */}
           <SettingsPanel />
-
-          {/* Logs Viewer */}
           <LogsViewer subgenUrl={connectedUrl} />
         </div>
       </main>
 
-      {/* Footer */}
       <footer className="border-t border-border mt-12">
         <div className="container mx-auto px-4 py-6 text-center text-sm text-muted-foreground">
           <p>

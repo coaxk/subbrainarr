@@ -10,8 +10,7 @@ import uvicorn
 import os
 from typing import List
 
-# Will import routers once we create them
-# from routers import connection, hardware, queue, languages, settings
+from routers import connection, hardware, logs, languages, settings, scanning, docker
 
 app = FastAPI(
     title="Subbrainarr API",
@@ -78,13 +77,13 @@ async def websocket_endpoint(websocket: WebSocket):
         manager.disconnect(websocket)
 
 # Include routers
-from routers import connection, hardware, logs, languages, settings
-
 app.include_router(connection.router, prefix="/api/connection", tags=["connection"])
 app.include_router(hardware.router, prefix="/api/hardware", tags=["hardware"])
 app.include_router(logs.router, prefix="/api/logs", tags=["logs"])
 app.include_router(languages.router, prefix="/api/languages", tags=["languages"])
 app.include_router(settings.router, prefix="/api/settings", tags=["settings"])
+app.include_router(scanning.router, prefix="/api/scanning", tags=["scanning"])
+app.include_router(docker.router, prefix="/api/docker", tags=["docker"])
 
 
 if __name__ == "__main__":

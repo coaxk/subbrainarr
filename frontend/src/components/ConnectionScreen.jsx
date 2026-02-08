@@ -71,7 +71,7 @@ export default function ConnectionScreen({ onConnected }) {
             <span className="text-primary">SubBrain</span>
             <span className="text-foreground">Arr</span>
           </h1>
-          <p className="text-sm text-muted-foreground mb-4">Connect to Subgen</p>>
+          <p className="text-sm text-muted-foreground mb-4">Connect to Subgen</p>
           <p className="text-muted-foreground">
             Let's find your Subgen instance
           </p>
