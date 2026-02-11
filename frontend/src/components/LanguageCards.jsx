@@ -1,15 +1,45 @@
 import { useState, useEffect } from "react";
-import { Globe, Sliders, TrendingUp, Clock } from "lucide-react";
+import { Globe, Sliders, TrendingUp, Clock, Wand2 } from "lucide-react";
+import LanguageTuningWizard from "./LanguageTuningWizard";
+
+// Convert language code to flag URL using flagcdn.com
+const getFlagUrl = (langCode) => {
+  const codeMap = {
+    'ar': 'sa', 'zh': 'cn', 'cs': 'cz', 'da': 'dk', 'nl': 'nl',
+    'en': 'gb', 'fi': 'fi', 'fr': 'fr', 'de': 'de', 'el': 'gr',
+    'it': 'it', 'ja': 'jp', 'ko': 'kr', 'no': 'no', 'pl': 'pl',
+    'pt': 'pt', 'ru': 'ru', 'es': 'es', 'sv': 'se'
+  };
+
+  const countryCode = (codeMap[langCode] || langCode).toLowerCase();
+  return `https://flagcdn.com/w40/${countryCode}.png`;
+};
 
 export default function LanguageCards() {
   const [languages, setLanguages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showWizard, setShowWizard] = useState(false);
 
   useEffect(() => {
     fetchLanguages();
   }, []);
 
+  useEffect(() => {
+    const handleLanguageUpdate = (e) => {
+      console.log("🔔 Language update event received:", e.detail);
+      console.log("🔄 Calling fetchLanguages...");
+      fetchLanguages();
+    };
+
+    window.addEventListener('languageUpdated', handleLanguageUpdate);
+
+    return () => {
+      window.removeEventListener('languageUpdated', handleLanguageUpdate);
+    };
+  }, []);
+
   const fetchLanguages = async () => {
+    console.log("📡 Fetching languages from API...");
     setLoading(true);
     try {
       const response = await fetch("/api/languages/list");
@@ -61,6 +91,13 @@ export default function LanguageCards() {
             </p>
           </div>
         </div>
+        <button
+          onClick={() => setShowWizard(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-md transition-colors"
+        >
+          <Wand2 className="w-4 h-4" />
+          Tune Language
+        </button>
       </div>
 
       {/* Language Grid */}
@@ -73,7 +110,11 @@ export default function LanguageCards() {
             {/* Language Header */}
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <span className="text-2xl">{lang.flag}</span>
+                <img
+                  src={getFlagUrl(lang.code)}
+                  alt={`${lang.name} flag`}
+                  className="w-8 h-8 rounded"
+                />
                 <div>
                   <div className="font-semibold">{lang.name}</div>
                   <div className="text-xs text-muted-foreground font-mono">
@@ -148,6 +189,11 @@ export default function LanguageCards() {
           </div>
         ))}
       </div>
+
+      {/* Language Tuning Wizard */}
+      {showWizard && (
+        <LanguageTuningWizard onClose={() => setShowWizard(false)} />
+      )}
     </div>
   );
 }

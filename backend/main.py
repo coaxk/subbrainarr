@@ -10,7 +10,7 @@ import uvicorn
 import os
 from typing import List
 
-from routers import connection, hardware, logs, languages, settings, scanning, docker
+from routers import connection, hardware, logs, languages, settings, scanning, docker, github, community, tuning
 
 app = FastAPI(
     title="Subbrainarr API",
@@ -84,6 +84,9 @@ app.include_router(languages.router, prefix="/api/languages", tags=["languages"]
 app.include_router(settings.router, prefix="/api/settings", tags=["settings"])
 app.include_router(scanning.router, prefix="/api/scanning", tags=["scanning"])
 app.include_router(docker.router, prefix="/api/docker", tags=["docker"])
+app.include_router(github.router, prefix="/api/github", tags=["github"])
+app.include_router(community.router, prefix="/api/community", tags=["community"])
+app.include_router(tuning.router, prefix="/api/tuning", tags=["tuning"])
 
 
 if __name__ == "__main__":

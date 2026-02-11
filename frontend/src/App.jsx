@@ -7,6 +7,8 @@ import LanguageCards from "./components/LanguageCards";
 import SettingsPanel from "./components/SettingsPanel";
 import RecommendationsCard from "./components/RecommendationsCard";
 import SmartScan from "./components/SmartScan";
+import Footer from "./components/Footer";
+import CommunityCard from "./components/CommunityCard";
 
 function App() {
   const [connectedUrl, setConnectedUrl] = useState(null);
@@ -118,6 +120,7 @@ function App() {
           </div>
 
           <RecommendationsCard />
+          <CommunityCard />
           <HardwareCard />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -135,7 +138,7 @@ function App() {
                 <HardDrive className="w-5 h-5 text-primary" />
                 <h3 className="font-semibold">Languages</h3>
               </div>
-              <p className="text-2xl font-bold">19</p>
+              <p className="text-2xl font-bold">31</p>
               <p className="text-sm text-muted-foreground">
                 Configured & ready
               </p>
@@ -150,28 +153,7 @@ function App() {
         </div>
       </main>
 
-      <footer className="border-t border-border mt-12">
-        <div className="container mx-auto px-4 py-6 text-center text-sm text-muted-foreground">
-          <p>
-            Made with 💜 by{" "}
-            <a
-              href="https://github.com/coaxk"
-              className="text-primary hover:underline"
-            >
-              @coaxk
-            </a>
-          </p>
-          <p className="mt-1">
-            Powered by{" "}
-            <a
-              href="https://github.com/McCloudS/subgen"
-              className="text-primary hover:underline"
-            >
-              McCloud/subgen
-            </a>
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

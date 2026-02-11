@@ -366,7 +366,7 @@ async def get_smart_recommendations():
         "type": "tip",
         "icon": "🎯",
         "title": "Per-Language Optimization",
-        "description": "Each of your 19 languages has optimized settings - check Language Cards",
+        "description": "Each of your 31 languages has optimized settings - check Language Cards",
         "action": "Scroll to Language Configurations"
     })
     
