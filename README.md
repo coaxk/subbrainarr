@@ -213,7 +213,7 @@ Turns out, Subgen was capable all along. Just needed to unlock it.
 
 **v1.0** (Launch)
 
-- 🎯 Per-language optimization (18 languages)
+- 🎯 Per-language optimization (30+ languages)
 - 🧠 Hardware detection & recommendations
 - 📊 Real-time dashboard
 - 🎛️ Interactive tuning wizard

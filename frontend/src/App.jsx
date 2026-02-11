@@ -15,6 +15,14 @@ function App() {
   const [apiStatus, setApiStatus] = useState("checking");
   const [apiData, setApiData] = useState(null);
   const [subgenInfo, setSubgenInfo] = useState(null);
+  const [languageCount, setLanguageCount] = useState(null);
+
+  useEffect(() => {
+    fetch("/api/languages/list")
+      .then((res) => res.json())
+      .then((data) => setLanguageCount(data.length))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     fetch("/api/")
@@ -138,7 +146,7 @@ function App() {
                 <HardDrive className="w-5 h-5 text-primary" />
                 <h3 className="font-semibold">Languages</h3>
               </div>
-              <p className="text-2xl font-bold">31</p>
+              <p className="text-2xl font-bold">{languageCount ?? "..."}</p>
               <p className="text-sm text-muted-foreground">
                 Configured & ready
               </p>

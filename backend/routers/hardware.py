@@ -8,6 +8,7 @@ import os
 import platform
 import shutil
 from typing import Optional, Dict, Any
+from .languages import DEFAULT_LANGUAGES
 
 router = APIRouter()
 
@@ -366,7 +367,7 @@ async def get_smart_recommendations():
         "type": "tip",
         "icon": "🎯",
         "title": "Per-Language Optimization",
-        "description": "Each of your 31 languages has optimized settings - check Language Cards",
+        "description": f"Each of your {len(DEFAULT_LANGUAGES)} languages has optimized settings - check Language Cards",
         "action": "Scroll to Language Configurations"
     })
     

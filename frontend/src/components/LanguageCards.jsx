@@ -5,10 +5,13 @@ import LanguageTuningWizard from "./LanguageTuningWizard";
 // Convert language code to flag URL using flagcdn.com
 const getFlagUrl = (langCode) => {
   const codeMap = {
-    'ar': 'sa', 'zh': 'cn', 'cs': 'cz', 'da': 'dk', 'nl': 'nl',
-    'en': 'gb', 'fi': 'fi', 'fr': 'fr', 'de': 'de', 'el': 'gr',
-    'it': 'it', 'ja': 'jp', 'ko': 'kr', 'no': 'no', 'pl': 'pl',
-    'pt': 'pt', 'ru': 'ru', 'es': 'es', 'sv': 'se'
+    'ar': 'sa', 'bn': 'bd', 'zh': 'cn', 'cs': 'cz', 'da': 'dk',
+    'nl': 'nl', 'en': 'gb', 'fi': 'fi', 'fr': 'fr', 'de': 'de',
+    'el': 'gr', 'he': 'il', 'hi': 'in', 'hu': 'hu', 'id': 'id',
+    'it': 'it', 'ja': 'jp', 'ko': 'kr', 'ms': 'my', 'no': 'no',
+    'fa': 'ir', 'pl': 'pl', 'pt': 'pt', 'ro': 'ro', 'ru': 'ru',
+    'es': 'es', 'sv': 'se', 'th': 'th', 'tr': 'tr', 'uk': 'ua',
+    'vi': 'vn'
   };
 
   const countryCode = (codeMap[langCode] || langCode).toLowerCase();
@@ -179,9 +182,7 @@ export default function LanguageCards() {
             {/* Actions */}
             <button
               className="w-full py-1.5 px-3 bg-secondary hover:bg-secondary/80 rounded-md text-sm transition-colors flex items-center justify-center gap-2"
-              onClick={() =>
-                alert(`Tuning wizard for ${lang.name} coming in v1.1!`)
-              }
+              onClick={() => alert(`Tuning wizard for ${lang.name} coming in v1.1!`)}
             >
               <Sliders className="w-4 h-4" />
               Tune Settings

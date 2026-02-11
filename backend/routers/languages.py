@@ -19,7 +19,7 @@ class LanguageSettings(BaseModel):
     recommendation: Optional[str] = None
     is_optimized: bool = True
 
-# Default optimized settings for 31 languages
+# Default optimized settings per language
 DEFAULT_LANGUAGES = {
     "ar": {
         "code": "ar",
