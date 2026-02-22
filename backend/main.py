@@ -15,7 +15,7 @@ from routers import connection, hardware, logs, languages, settings, scanning, d
 app = FastAPI(
     title="Subbrainarr API",
     description="The dashboard that gives Subgen a brain",
-    version="1.0.0"
+    version="1.5.0"
 )
 
 # CORS middleware for frontend
@@ -54,7 +54,7 @@ async def root():
     return {
         "message": "Subbrainarr API",
         "tagline": "Subgen, but with a brain",
-        "version": "1.0.0",
+        "version": "1.5.0",
         "status": "The brain is online 🧠"
     }
 

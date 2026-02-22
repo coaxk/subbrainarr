@@ -16,10 +16,10 @@ export default function LanguageTuningWizard({ onClose }) {
     fetch("/api/languages/list")
       .then((r) => r.json())
       .then((data) => {
-        const langNames = data.map((l) => l.name).sort();
-        setLanguages(langNames);
-        if (langNames.length > 0 && !language) {
-          setLanguage(langNames[0]);
+        const langList = data.map((l) => ({ name: l.name, native_name: l.native_name })).sort((a, b) => a.name.localeCompare(b.name));
+        setLanguages(langList);
+        if (langList.length > 0 && !language) {
+          setLanguage(langList[0].name);
         }
       })
       .catch((err) => console.error("Failed to fetch languages:", err));
@@ -185,8 +185,8 @@ export default function LanguageTuningWizard({ onClose }) {
                 className="w-full px-4 py-3 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary mb-6"
               >
                 {languages.map((lang) => (
-                  <option key={lang} value={lang}>
-                    {lang}
+                  <option key={lang.name} value={lang.name}>
+                    {lang.name} ({lang.native_name})
                   </option>
                 ))}
               </select>

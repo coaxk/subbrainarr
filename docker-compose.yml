@@ -38,7 +38,7 @@ services:
       - subgen
     labels:
       - "com.subbrainarr.description=The dashboard that gives Subgen a brain"
-      - "com.subbrainarr.version=1.0.0"
+      - "com.subbrainarr.version=1.5.0"
 
 networks:
   subgen-network:

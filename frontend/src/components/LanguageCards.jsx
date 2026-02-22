@@ -5,13 +5,18 @@ import LanguageTuningWizard from "./LanguageTuningWizard";
 // Convert language code to flag URL using flagcdn.com
 const getFlagUrl = (langCode) => {
   const codeMap = {
-    'ar': 'sa', 'bn': 'bd', 'zh': 'cn', 'cs': 'cz', 'da': 'dk',
-    'nl': 'nl', 'en': 'gb', 'fi': 'fi', 'fr': 'fr', 'de': 'de',
-    'el': 'gr', 'he': 'il', 'hi': 'in', 'hu': 'hu', 'id': 'id',
-    'it': 'it', 'ja': 'jp', 'ko': 'kr', 'ms': 'my', 'no': 'no',
-    'fa': 'ir', 'pl': 'pl', 'pt': 'pt', 'ro': 'ro', 'ru': 'ru',
-    'es': 'es', 'sv': 'se', 'th': 'th', 'tr': 'tr', 'uk': 'ua',
-    'vi': 'vn'
+    'af': 'za', 'ar': 'sa', 'hy': 'am', 'az': 'az', 'be': 'by',
+    'bn': 'bd', 'bs': 'ba', 'bg': 'bg', 'ca': 'es', 'zh': 'cn',
+    'hr': 'hr', 'cs': 'cz', 'da': 'dk', 'nl': 'nl', 'en': 'gb',
+    'et': 'ee', 'fi': 'fi', 'gl': 'es', 'fr': 'fr', 'de': 'de',
+    'el': 'gr', 'he': 'il', 'hi': 'in', 'hu': 'hu', 'is': 'is',
+    'id': 'id', 'it': 'it', 'ja': 'jp', 'kn': 'in', 'kk': 'kz',
+    'ko': 'kr', 'lv': 'lv', 'lt': 'lt', 'ms': 'my', 'mk': 'mk',
+    'mi': 'nz', 'mr': 'in', 'ne': 'np', 'no': 'no', 'fa': 'ir',
+    'pl': 'pl', 'pt': 'pt', 'ro': 'ro', 'sr': 'rs', 'ru': 'ru',
+    'sk': 'sk', 'sl': 'si', 'es': 'es', 'sv': 'se', 'sw': 'ke',
+    'tl': 'ph', 'ta': 'in', 'th': 'th', 'tr': 'tr', 'uk': 'ua',
+    'ur': 'pk', 'vi': 'vn', 'cy': 'gb-wls'
   };
 
   const countryCode = (codeMap[langCode] || langCode).toLowerCase();
@@ -120,8 +125,8 @@ export default function LanguageCards() {
                 />
                 <div>
                   <div className="font-semibold">{lang.name}</div>
-                  <div className="text-xs text-muted-foreground font-mono">
-                    {lang.code}
+                  <div className="text-xs text-muted-foreground">
+                    {lang.native_name}
                   </div>
                 </div>
               </div>
