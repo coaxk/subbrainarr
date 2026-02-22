@@ -7,6 +7,8 @@ import httpx
 import asyncio
 from typing import Optional
 
+from .url_validation import validate_subgen_url
+
 router = APIRouter()
 
 @router.get("/subgen")
@@ -18,17 +20,19 @@ async def get_subgen_logs(
     Fetch logs from Subgen instance
     Note: Subgen doesn't expose logs via API, so we provide instructions
     """
+    # Validate URL to prevent SSRF
+    valid, clean_url = validate_subgen_url(subgen_url)
+    if not valid:
+        return {"success": False, "error": clean_url, "logs": ""}
+
     try:
-        # Clean URL
-        subgen_url = subgen_url.rstrip('/')
-        
         # Try to connect to verify it's running
         async with httpx.AsyncClient(timeout=5.0) as client:
-            response = await client.get(subgen_url)
+            response = await client.get(clean_url)
             
             if response.status_code == 200:
                 # Subgen is running but doesn't expose logs
-                logs = f"""Subgen is running at {subgen_url} ✓
+                logs = f"""Subgen is running at {clean_url} ✓
 
 Subgen doesn't expose logs via API endpoint yet.
 

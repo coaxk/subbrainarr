@@ -8,6 +8,8 @@ from typing import Optional, List
 import httpx
 import asyncio
 
+from .url_validation import validate_subgen_url
+
 router = APIRouter()
 
 class ScanRequest(BaseModel):
@@ -42,14 +44,15 @@ async def smart_scan(request: ScanRequest):
     # - Detect missing subtitles
     # - Choose forward vs reverse based on analysis
     
+    # Validate URL to prevent SSRF
+    valid, clean_url = validate_subgen_url(request.subgen_url)
+    if not valid:
+        raise HTTPException(status_code=400, detail=f"Invalid Subgen URL: {clean_url}")
+
     # For now, just trigger Subgen
     try:
-        # Subgen scan endpoint (we'll need to verify this)
-        # This is a placeholder - actual Subgen API may differ
         async with httpx.AsyncClient() as client:
-            # Try to trigger a scan via Subgen API
-            # NOTE: We need to discover Subgen's actual scan endpoint
-            scan_url = f"{request.subgen_url}/api/scan"
+            scan_url = f"{clean_url}/api/scan"
             
             response = await client.post(
                 scan_url,
@@ -107,10 +110,15 @@ async def get_scan_status(subgen_url: str):
     """
     Get current scan status from Subgen
     """
+    # Validate URL to prevent SSRF
+    valid, clean_url = validate_subgen_url(subgen_url)
+    if not valid:
+        return {"status": "error", "message": f"Invalid URL: {clean_url}"}
+
     try:
         async with httpx.AsyncClient() as client:
             response = await client.get(
-                f"{subgen_url}/api/status",
+                f"{clean_url}/api/status",
                 timeout=5.0
             )
             

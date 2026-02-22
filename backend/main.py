@@ -19,11 +19,15 @@ app = FastAPI(
 )
 
 # CORS middleware for frontend
+# CORS: Allow the Vite dev server and the production frontend origin.
+# In Docker, the frontend is served from the same origin so CORS is moot,
+# but these cover local development and reverse-proxy setups.
+_cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:5918,http://localhost:9918").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, specify your frontend URL
-    allow_credentials=True,
-    allow_methods=["*"],
+    allow_origins=[o.strip() for o in _cors_origins],
+    allow_credentials=False,
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 
@@ -95,6 +99,6 @@ if __name__ == "__main__":
         "main:app",
         host="0.0.0.0",
         port=port,
-        reload=True,
+        reload=os.getenv("DEBUG", "false").lower() == "true",
         log_level="info"
     )
