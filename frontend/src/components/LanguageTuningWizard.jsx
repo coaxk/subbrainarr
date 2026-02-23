@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { Wand2, ArrowRight, CheckCircle, X } from "lucide-react";
 
-export default function LanguageTuningWizard({ onClose }) {
-  const [step, setStep] = useState(1);
-  const [language, setLanguage] = useState("Japanese");
+export default function LanguageTuningWizard({ onClose, defaultLanguage }) {
+  const [step, setStep] = useState(defaultLanguage ? 0 : 1);
+  const [language, setLanguage] = useState(defaultLanguage || "Japanese");
   const [languages, setLanguages] = useState([]);
   const [issues, setIssues] = useState([]);
   const [recommendations, setRecommendations] = useState(null);
@@ -15,11 +15,16 @@ export default function LanguageTuningWizard({ onClose }) {
   useEffect(() => {
     fetch("/api/languages/list")
       .then((r) => r.json())
-      .then((data) => {
+      .then(async (data) => {
         const langList = data.map((l) => ({ name: l.name, native_name: l.native_name })).sort((a, b) => a.name.localeCompare(b.name));
         setLanguages(langList);
         if (langList.length > 0 && !language) {
           setLanguage(langList[0].name);
+        }
+        // Auto-skip Step 1 when a language was pre-selected from the row
+        if (defaultLanguage && langList.some((l) => l.name === defaultLanguage)) {
+          await fetchCurrentSettings();
+          setStep(2);
         }
       })
       .catch((err) => console.error("Failed to fetch languages:", err));
@@ -112,14 +117,12 @@ export default function LanguageTuningWizard({ onClose }) {
         }),
       });
       setStep(4);
-      onClose();  // Close modal FIRST
-      // Notify LanguageCards to refresh after delay
-      setTimeout(() => {
-        console.log("📤 Dispatching languageUpdated event for:", language);
-        window.dispatchEvent(
-          new CustomEvent("languageUpdated", { detail: { language } })
-        );
-      }, 100);  // THEN dispatch after delay
+      // Dispatch refresh event so LanguageCards picks up the new tuning
+      window.dispatchEvent(
+        new CustomEvent("languageUpdated", { detail: { language } })
+      );
+      // Don't call onClose() here — let Step 4 render so the user
+      // sees the success screen and can choose "Done" or "Tune Another"
     } catch (error) {
       console.error("Apply failed:", error);
     }
@@ -133,7 +136,7 @@ export default function LanguageTuningWizard({ onClose }) {
           <div className="flex items-center gap-3">
             <Wand2 className="w-6 h-6 text-primary" />
             <div>
-              <h2 className="text-xl font-bold">Language Tuning Wizard</h2>
+              <h2 className="text-lg font-bold">Language Tuning Wizard</h2>
               <p className="text-sm text-muted-foreground">
                 Optimize subtitle settings in 3 easy steps
               </p>
@@ -332,6 +335,18 @@ export default function LanguageTuningWizard({ onClose }) {
                 </div>
               </div>
 
+              {/* What will happen — transparency preview */}
+              <div className="bg-secondary/30 border border-border rounded-lg p-4 mb-6">
+                <p className="text-sm font-medium mb-2">What will happen:</p>
+                <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+                  <li>Update {language} patience from {recommendations.before_settings.patience} → {recommendations.after_settings.patience}</li>
+                  <li>Update length penalty from {recommendations.before_settings.length_penalty} → {recommendations.after_settings.length_penalty}</li>
+                  <li>Update beam size from {recommendations.before_settings.beam_size} → {recommendations.after_settings.beam_size}</li>
+                  <li>Changes are saved in SubBrainArr and reflected in your compose snippet</li>
+                  <li>Restart Subgen for changes to take effect</li>
+                </ul>
+              </div>
+
               <div className="flex gap-3">
                 <button
                   onClick={() => setStep(2)}
@@ -353,7 +368,7 @@ export default function LanguageTuningWizard({ onClose }) {
           {step === 4 && (
             <div className="text-center py-8">
               <div className="text-6xl mb-4">✨</div>
-              <h3 className="text-xl font-bold mb-2">Settings Applied!</h3>
+              <h3 className="text-lg font-bold mb-2">Settings Applied!</h3>
               <p className="text-muted-foreground mb-6">
                 {language} is now optimized. Restart Subgen for changes to take
                 effect.

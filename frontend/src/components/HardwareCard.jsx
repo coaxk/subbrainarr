@@ -1,5 +1,33 @@
 import { useState, useEffect } from "react";
-import { Cpu, Zap, HardDrive, RefreshCw } from "lucide-react";
+import { Cpu, Zap, HardDrive, RefreshCw, Monitor, Container } from "lucide-react";
+
+// Inline SVG icons for OS platforms (lucide doesn't have OS logos)
+const WindowsIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+    <path d="M3 12V6.5l8-1.1V12H3zm0 .5h8v6.6l-8-1.1V12.5zM12.5 12V5.2l8.5-1.2v8h-8.5zm0 .5h8.5v8l-8.5-1.2v-6.8z" />
+  </svg>
+);
+
+const LinuxIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+    <path d="M12.5 2C10.3 2 9 4.3 9 7c0 1.5.4 2.8 1 3.8-.8.6-2.5 2.2-3.2 4.2-.3.8-.5 1.7-.5 2.5 0 .7.1 1.3.4 1.8.3.5.7.7 1.3.7.5 0 1-.2 1.5-.5.4-.3.9-.6 1.5-.6.5 0 1 .3 1.5.6.5.3 1 .5 1.5.5s1-.2 1.5-.5c.4-.3.9-.6 1.5-.6.5 0 1 .3 1.5.6.5.3 1 .5 1.5.5.6 0 1-.2 1.3-.7.3-.5.4-1.1.4-1.8 0-.8-.2-1.7-.5-2.5-.7-2-2.4-3.6-3.2-4.2.6-1 1-2.3 1-3.8 0-2.7-1.3-5-3.5-5z" />
+  </svg>
+);
+
+const AppleIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+  </svg>
+);
+
+const getPlatformIcon = (platformStr) => {
+  if (!platformStr) return { icon: Monitor, label: "Unknown" };
+  const p = platformStr.toLowerCase();
+  if (p.includes("windows")) return { icon: WindowsIcon, label: "Windows" };
+  if (p.includes("darwin") || p.includes("macos")) return { icon: AppleIcon, label: "macOS" };
+  if (p.includes("linux")) return { icon: LinuxIcon, label: "Linux" };
+  return { icon: Monitor, label: platformStr };
+};
 
 export default function HardwareCard() {
   const [hardware, setHardware] = useState(null);
@@ -181,16 +209,34 @@ export default function HardwareCard() {
           </div>
         )}
 
-        {/* Platform (update to show version) */}
-        <div className="flex items-center justify-between p-3 bg-secondary/50 rounded-md">
-          <span className="text-sm text-muted-foreground">Platform</span>
-          <div className="text-right">
-            <div className="text-sm font-mono">{hardware.platform}</div>
-            {hardware.platform_version && (
-              <div className="text-xs text-muted-foreground mt-0.5">
-                {hardware.platform_version}
+        {/* Platform Badges */}
+        <div className="p-3 bg-secondary/50 rounded-md">
+          <div className="text-sm text-muted-foreground mb-2">Platform</div>
+          <div className="flex flex-wrap gap-2">
+            {(() => {
+              const { icon: PlatformIcon, label } = getPlatformIcon(hardware.platform);
+              return (
+                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-background border border-border rounded-full text-sm">
+                  <PlatformIcon />
+                  <span className="font-medium">{label}</span>
+                  {hardware.platform_version && (
+                    <span className="text-muted-foreground text-xs">
+                      {hardware.platform_version}
+                    </span>
+                  )}
+                </div>
+              );
+            })()}
+            {hardware.device_type === "cuda" && (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-background border border-border rounded-full text-sm">
+                <Zap className="w-4 h-4 text-green-500" />
+                <span className="font-medium">CUDA</span>
               </div>
             )}
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-background border border-border rounded-full text-sm">
+              <Container className="w-4 h-4 text-blue-400" />
+              <span className="font-medium">Docker</span>
+            </div>
           </div>
         </div>
 

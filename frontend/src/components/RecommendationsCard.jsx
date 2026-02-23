@@ -7,7 +7,15 @@ import {
   Target,
 } from "lucide-react";
 
-export default function RecommendationsCard() {
+// Map known action strings from the backend to tab navigation targets
+const ACTION_NAV = {
+  "Scroll to Language Configurations": { tab: "languages" },
+  "Consider batch processing": { tab: "settings", subTab: "performance" },
+  "Go to Settings → Model & Compute": { tab: "settings", subTab: "model" },
+  "Go to Settings → Performance": { tab: "settings", subTab: "performance" },
+};
+
+export default function RecommendationsCard({ onNavigate }) {
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -114,9 +122,18 @@ export default function RecommendationsCard() {
                   {rec.description}
                 </p>
                 {rec.action && (
-                  <div className="text-xs text-primary font-medium">
-                    → {rec.action}
-                  </div>
+                  ACTION_NAV[rec.action] && onNavigate ? (
+                    <button
+                      onClick={() => onNavigate(ACTION_NAV[rec.action])}
+                      className="text-xs text-primary font-medium hover:underline cursor-pointer text-left"
+                    >
+                      → {rec.action}
+                    </button>
+                  ) : (
+                    <div className="text-xs text-primary font-medium">
+                      → {rec.action}
+                    </div>
+                  )
                 )}
               </div>
             </div>

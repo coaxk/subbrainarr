@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Settings, Save, RotateCcw, TestTube, Copy, Check, X, HelpCircle, Zap } from "lucide-react";
 
-export default function SettingsPanel() {
+export default function SettingsPanel({ pendingSubTab, onSubTabConsumed }) {
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -21,6 +21,15 @@ export default function SettingsPanel() {
       .then((data) => setAvailableLanguages(data))
       .catch((err) => console.error("Failed to fetch languages:", err));
   }, []);
+
+  // Deep-link: when another component navigates here with a specific sub-tab,
+  // switch to it and acknowledge so the parent clears the pending value.
+  useEffect(() => {
+    if (pendingSubTab) {
+      setActiveTab(pendingSubTab);
+      onSubTabConsumed?.();
+    }
+  }, [pendingSubTab]);
 
   const fetchSettings = async () => {
     setLoading(true);
@@ -218,6 +227,14 @@ export default function SettingsPanel() {
             {saving ? "Saving..." : "Save & Generate"}
           </button>
         </div>
+      </div>
+
+      {/* Save & Generate explainer */}
+      <div className="mb-6 p-3 bg-blue-500/5 border border-blue-500/20 rounded-lg text-sm text-muted-foreground">
+        <span className="font-medium text-foreground">What does "Save & Generate" do?</span>{" "}
+        Saves your settings and generates a Docker Compose snippet with the matching
+        Subgen environment variables. Copy the snippet into your Subgen docker-compose.yaml
+        and restart the container for changes to take effect.
       </div>
 
       {composeSnippet && (
@@ -823,13 +840,16 @@ export default function SettingsPanel() {
           <>
             <div className="bg-secondary/50 rounded-lg p-3 mb-4">
               <p className="text-sm text-muted-foreground">
-                🚫 <strong>Skip logic:</strong> Save time and resources by
+                <strong>Skip logic:</strong> Save time and resources by
                 automatically skipping files you don't need processed.
               </p>
-              <p className="text-sm text-muted-foreground mt-2">
-                <strong>Example:</strong> Already have English audio? Skip it.
-                Files with "subbed" in the name? Skip those too.
-              </p>
+              {settings.whisper_task === "translate" && (
+                <p className="text-xs text-blue-400 mt-2">
+                  <strong>Note:</strong> Whisper's translate mode always outputs
+                  English subtitles — this is a Whisper limitation, not a setting.
+                  The skip conditions below correctly reference English.
+                </p>
+              )}
             </div>
 
             <div className="flex items-center gap-2">
@@ -844,7 +864,11 @@ export default function SettingsPanel() {
                 }
                 className="w-4 h-4"
               />
-              <label className="text-sm">Skip if audio is English</label>
+              <label className="text-sm">
+                {settings.whisper_task === "transcribe" && settings.subtitle_language && settings.subtitle_language !== "en"
+                  ? `Skip if audio is ${availableLanguages.find(l => l.code === settings.subtitle_language)?.name || settings.subtitle_language}`
+                  : "Skip if audio is English"}
+              </label>
             </div>
 
             <div className="flex items-center gap-2">
@@ -859,13 +883,30 @@ export default function SettingsPanel() {
                 }
                 className="w-4 h-4"
               />
-              <label className="text-sm">Skip if English subtitles exist</label>
+              <label className="text-sm">
+                {settings.whisper_task === "transcribe" && settings.subtitle_language && settings.subtitle_language !== "en"
+                  ? `Skip if ${availableLanguages.find(l => l.code === settings.subtitle_language)?.name || settings.subtitle_language} subtitles exist`
+                  : "Skip if English subtitles exist"}
+              </label>
             </div>
 
             <div>
               <label className="block text-sm font-medium mb-2">
                 Skip files matching patterns
               </label>
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 mb-3 text-xs">
+                <p className="font-medium text-blue-400 mb-1.5">Common patterns:</p>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-muted-foreground">
+                  <div><code className="text-primary">subbed</code> — hardcoded subtitles</div>
+                  <div><code className="text-primary">korsub</code> — Korean subs baked in</div>
+                  <div><code className="text-primary">dubbed</code> — dubbed audio track</div>
+                  <div><code className="text-primary">sample</code> — sample/preview files</div>
+                  <div><code className="text-primary">trailer</code> — trailers and extras</div>
+                  <div><code className="text-primary">extra</code> — bonus content</div>
+                  <div><code className="text-primary">featurette</code> — behind-the-scenes</div>
+                  <div><code className="text-primary">ncsub</code> — non-conforming subs</div>
+                </div>
+              </div>
               <input
                 type="text"
                 placeholder="subbed, korsub, dubbed (comma-separated)"
@@ -881,7 +922,7 @@ export default function SettingsPanel() {
                 className="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               />
               <p className="text-xs text-muted-foreground mt-1">
-                Files with these words in the filename will be skipped
+                Files with these words in the filename will be skipped (comma-separated, case-insensitive)
               </p>
             </div>
           </>
@@ -985,10 +1026,20 @@ export default function SettingsPanel() {
                   }
                   className="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary font-mono text-sm"
                 />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Where Whisper models are downloaded and cached. Models are 1-3 GB each.
-                  Use a Docker volume mount to persist them between container restarts.
-                </p>
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 mt-2 text-xs">
+                  <p className="font-medium text-blue-400 mb-1">Docker Mount Info</p>
+                  <p className="text-muted-foreground mb-2">
+                    This path is <strong>inside the Subgen container</strong>. To persist
+                    models between restarts, mount a host volume in your compose file:
+                  </p>
+                  <code className="block bg-background/50 px-2 py-1.5 rounded font-mono text-primary">
+                    - /path/to/models:/app/models
+                  </code>
+                  <p className="text-muted-foreground mt-2">
+                    Models are 1-3 GB each. The large-v3 model is ~3 GB. Ensure
+                    sufficient disk space on the host volume.
+                  </p>
+                </div>
               </div>
 
               <div className="mt-4">

@@ -283,7 +283,9 @@ async def get_recommendations():
         "concurrent": 1 if not hw.total_memory or hw.total_memory < 16 else 2,
         "explanation": hw.recommendation
     }
-    
+
+    return recommendations
+
 @router.get("/smart-recommendations")
 async def get_smart_recommendations():
     """
@@ -380,4 +382,3 @@ async def get_smart_recommendations():
             "ram": hw.ram_total
         }
     }
-    return recommendations

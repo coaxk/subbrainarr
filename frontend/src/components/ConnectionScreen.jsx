@@ -77,6 +77,19 @@ export default function ConnectionScreen({ onConnected }) {
           </p>
         </div>
 
+        {/* Getting Started — explain the two packaging paths */}
+        <div className="bg-card border border-border rounded-lg p-4 mb-6 text-sm text-muted-foreground">
+          <p className="font-medium text-foreground mb-2">Getting Started</p>
+          <p className="mb-1">
+            <span className="text-foreground">Using the bundled setup?</span>{" "}
+            SubBrainArr will auto-detect your Subgen instance — no configuration needed.
+          </p>
+          <p>
+            <span className="text-foreground">Running Subgen separately?</span>{" "}
+            Enter your Subgen URL in the manual entry section below.
+          </p>
+        </div>
+
         {/* Auto-detect Results */}
         <div className="bg-card border border-border rounded-lg p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
@@ -158,11 +171,21 @@ export default function ConnectionScreen({ onConnected }) {
               ))}
             </div>
           )}
+
+          {/* Success context when instance found */}
+          {selectedUrl && !scanning && (
+            <div className="mt-3 p-2 bg-green-500/10 border border-green-500/20 rounded text-sm text-green-500">
+              Found Subgen at {selectedUrl} — ready to connect.
+            </div>
+          )}
         </div>
 
         {/* Manual Entry */}
         <div className="bg-card border border-border rounded-lg p-6 mb-6">
-          <h2 className="text-lg font-semibold mb-4">Manual Entry</h2>
+          <h2 className="text-lg font-semibold mb-2">Manual Entry</h2>
+          <p className="text-xs text-muted-foreground mb-4">
+            Enter the URL where Subgen is running (e.g. http://subgen:9000 or http://192.168.1.100:9000)
+          </p>
           <div className="flex gap-2">
             <input
               type="text"

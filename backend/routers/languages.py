@@ -1,5 +1,10 @@
 """
 Languages router - manage per-language settings and recommendations
+
+optimization_status tri-state:
+  "default" — using SubBrainArr's preset tuning (no user action taken)
+  "tuned"   — user applied tuning wizard (wizard confirmed changes)
+  "custom"  — reserved for future manual edits outside wizard
 """
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -18,7 +23,8 @@ class LanguageSettings(BaseModel):
     files_processed: int = 0
     last_used: Optional[str] = None
     recommendation: Optional[str] = None
-    is_optimized: bool = True
+    is_optimized: bool = True  # Kept for backwards compat with frontend
+    optimization_status: str = "default"  # "default", "tuned", "custom"
 
 # Default optimized settings per language
 DEFAULT_LANGUAGES = {
@@ -584,25 +590,35 @@ DEFAULT_LANGUAGES = {
 @router.get("/list", response_model=List[LanguageSettings])
 async def list_languages():
     """
-    Get list of all configured languages with their settings
+    Get list of all configured languages with their settings.
+    Checks tuning._tuned_languages to determine optimization_status.
     """
+    # Import here to avoid circular import at module level
+    from .tuning import _tuned_languages
+
     languages = []
     for lang_data in DEFAULT_LANGUAGES.values():
-        # beam_size may already be in lang_data from tuning updates
-        # Only add it if not present (use default from model)
+        code = lang_data["code"]
+        # Determine optimization status from tuning tracker
+        if code in _tuned_languages:
+            status = "tuned"
+            is_opt = True
+        else:
+            status = "default"
+            is_opt = False  # Not yet tuned by user — show as neutral
+
         settings_data = {
             **lang_data,
             "files_processed": 0,  # TODO: Track from database
             "last_used": None,     # TODO: Track from database
-            "is_optimized": True
+            "is_optimized": is_opt,
+            "optimization_status": status,
         }
-        # Add beam_size default only if not already present
         if "beam_size" not in settings_data:
             settings_data["beam_size"] = 5
 
         languages.append(LanguageSettings(**settings_data))
 
-    # Sort by name
     languages.sort(key=lambda x: x.name)
     return languages
 
@@ -611,14 +627,18 @@ async def get_language(language_code: str):
     """
     Get settings for a specific language
     """
+    from .tuning import _tuned_languages
+
     if language_code in DEFAULT_LANGUAGES:
         lang_data = DEFAULT_LANGUAGES[language_code]
+        status = "tuned" if language_code in _tuned_languages else "default"
         return LanguageSettings(
             **lang_data,
-            beam_size=5,
+            beam_size=lang_data.get("beam_size", 5),
             files_processed=0,
             last_used=None,
-            is_optimized=True
+            is_optimized=(status == "tuned"),
+            optimization_status=status,
         )
     else:
         return LanguageSettings(
@@ -632,5 +652,6 @@ async def get_language(language_code: str):
             files_processed=0,
             last_used=None,
             recommendation="Using default settings",
-            is_optimized=False
+            is_optimized=False,
+            optimization_status="default",
         )

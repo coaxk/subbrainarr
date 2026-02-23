@@ -1,12 +1,20 @@
 """
 Language tuning wizard - help users optimize subtitle settings
+
+Tracks which languages have been tuned via the wizard vs manually changed.
+The _tuned_languages set is in-memory only — resets on container restart.
+Persistence will come when we add settings.json integration.
 """
 from fastapi import APIRouter
 from pydantic import BaseModel
-from typing import List
+from typing import List, Set
 from . import languages
 
 router = APIRouter()
+
+# Track which languages the user has tuned via the wizard.
+# Keyed by language code. In-memory only until persistence lands.
+_tuned_languages: Set[str] = set()
 
 class TuningRequest(BaseModel):
     language: str
@@ -109,16 +117,19 @@ async def apply_tuning_settings(settings: ApplySettings):
     """
     # Find and update the language in DEFAULT_LANGUAGES
     # This updates in-memory until v1.1+ when we add persistence
+    applied = False
     for lang_code, lang_data in languages.DEFAULT_LANGUAGES.items():
         if lang_data["name"] == settings.language:
             lang_data["patience"] = settings.patience
             lang_data["length_penalty"] = settings.length_penalty
             lang_data["beam_size"] = settings.beam_size
-            # In v1.1+ this will be saved to database
+            # Mark this language as wizard-tuned
+            _tuned_languages.add(lang_code)
+            applied = True
             break
 
     return {
-        "success": True,
+        "success": applied,
         "language": settings.language,
         "settings_applied": {
             "patience": settings.patience,
@@ -127,3 +138,16 @@ async def apply_tuning_settings(settings: ApplySettings):
         },
         "message": f"Settings applied to {settings.language}. Restart Subgen for changes to take effect."
     }
+
+
+@router.post("/apply-defaults")
+async def apply_default_tuning():
+    """Mark all languages as tuned using SubBrainArr's optimized presets.
+
+    The preset values are already set in DEFAULT_LANGUAGES — this endpoint
+    simply marks every language as 'tuned' so the UI reflects that the user
+    has accepted the defaults.
+    """
+    for lang_code in languages.DEFAULT_LANGUAGES:
+        _tuned_languages.add(lang_code)
+    return {"success": True, "languages_tuned": len(languages.DEFAULT_LANGUAGES)}

@@ -23,7 +23,6 @@ export default function CommunityCard() {
           const milestoneCheck = await fetch(
             `/api/community/check-milestone?files_processed=${user.files_processed}`
           ).then((r) => r.json());
-          console.log("Milestone check result:", milestoneCheck);
           if (milestoneCheck.milestone_hit) {
             // Check if we've already shown this milestone
             const shownKey = `milestone_shown_${milestoneCheck.milestone_value}`;
