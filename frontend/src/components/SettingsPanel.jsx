@@ -12,9 +12,14 @@ export default function SettingsPanel() {
   const [copiedExample, setCopiedExample] = useState(null);
   const [autoDetecting, setAutoDetecting] = useState(false);
   const [autoDetectResult, setAutoDetectResult] = useState(null);
+  const [availableLanguages, setAvailableLanguages] = useState([]);
 
   useEffect(() => {
     fetchSettings();
+    fetch("/api/languages/list")
+      .then((r) => r.json())
+      .then((data) => setAvailableLanguages(data))
+      .catch((err) => console.error("Failed to fetch languages:", err));
   }, []);
 
   const fetchSettings = async () => {
@@ -279,6 +284,41 @@ export default function SettingsPanel() {
       <div className="space-y-4">
         {activeTab === "model" && (
           <>
+            <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4 mb-4">
+              <h4 className="font-semibold text-amber-400 mb-2">
+                Transcribe or Translate?
+              </h4>
+              <p className="text-sm text-muted-foreground mb-3">
+                <strong>Translate</strong> = foreign audio to English subtitles (what most people want).{" "}
+                <strong>Transcribe</strong> = audio to same-language subtitles (useful for deaf/HoH).
+                Getting this wrong means processing your entire library with the wrong mode.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setSettings({ ...settings, whisper_task: "translate" })}
+                  className={`flex-1 p-3 rounded-md border-2 text-left transition-all ${
+                    settings.whisper_task === "translate"
+                      ? "border-primary bg-primary/10"
+                      : "border-border hover:border-primary/50"
+                  }`}
+                >
+                  <div className="font-semibold">Translate (Recommended)</div>
+                  <div className="text-xs text-muted-foreground mt-1">Foreign audio &rarr; English subtitles</div>
+                </button>
+                <button
+                  onClick={() => setSettings({ ...settings, whisper_task: "transcribe" })}
+                  className={`flex-1 p-3 rounded-md border-2 text-left transition-all ${
+                    settings.whisper_task === "transcribe"
+                      ? "border-primary bg-primary/10"
+                      : "border-border hover:border-primary/50"
+                  }`}
+                >
+                  <div className="font-semibold">Transcribe</div>
+                  <div className="text-xs text-muted-foreground mt-1">Audio &rarr; same-language subtitles</div>
+                </button>
+              </div>
+            </div>
+
             <div className="bg-secondary/50 rounded-lg p-3 mb-4">
               <p className="text-sm text-muted-foreground">
                 💡 <strong>What happens:</strong> These settings tell Subgen
@@ -374,7 +414,8 @@ export default function SettingsPanel() {
                 className="w-full"
               />
               <p className="text-xs text-muted-foreground mt-1">
-                Higher = better quality but slower. Recommended: 5
+                Higher = better quality but slower. Recommended: 5.
+                Delivered to Subgen via SUBGEN_KWARGS.
               </p>
             </div>
           </>
@@ -452,6 +493,32 @@ export default function SettingsPanel() {
               />
               <label className="text-sm">Clear VRAM after each file</label>
             </div>
+
+            {settings.clear_vram_on_complete && (
+              <div className="ml-6 mt-2">
+                <label className="block text-sm font-medium mb-2">
+                  Cleanup Delay: {settings.model_cleanup_delay || 30}s
+                </label>
+                <input
+                  type="range"
+                  min="5"
+                  max="300"
+                  step="5"
+                  value={settings.model_cleanup_delay || 30}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      model_cleanup_delay: parseInt(e.target.value),
+                    })
+                  }
+                  className="w-full"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Grace period before unloading the model. If another file arrives
+                  during the wait, the model stays loaded for faster processing.
+                </p>
+              </div>
+            )}
           </>
         )}
 
@@ -902,6 +969,99 @@ export default function SettingsPanel() {
               <p className="text-xs text-muted-foreground mt-1">
                 Advanced subtitle regrouping pattern. Leave blank for defaults.
               </p>
+            </div>
+
+            <div className="border-t border-border pt-4 mt-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Model Storage Path
+                </label>
+                <input
+                  type="text"
+                  placeholder="./models"
+                  value={settings.model_path || "./models"}
+                  onChange={(e) =>
+                    setSettings({ ...settings, model_path: e.target.value })
+                  }
+                  className="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary font-mono text-sm"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Where Whisper models are downloaded and cached. Models are 1-3 GB each.
+                  Use a Docker volume mount to persist them between container restarts.
+                </p>
+              </div>
+
+              <div className="mt-4">
+                <label className="block text-sm font-medium mb-2">
+                  Force Detected Language
+                </label>
+                <select
+                  value={settings.force_detected_language_to || ""}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      force_detected_language_to: e.target.value,
+                    })
+                  }
+                  className="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <option value="">Auto-detect (default)</option>
+                  {availableLanguages.map((lang) => (
+                    <option key={lang.code} value={lang.code}>
+                      {lang.name} ({lang.code})
+                    </option>
+                  ))}
+                </select>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Override Whisper's language detection. Useful when your library is
+                  primarily one language and auto-detection is unreliable.
+                </p>
+              </div>
+            </div>
+
+            <div className="border-t border-border pt-4 mt-4">
+              <div className="flex items-center gap-2 mb-3">
+                <input
+                  type="checkbox"
+                  checked={settings.monitor || false}
+                  onChange={(e) =>
+                    setSettings({ ...settings, monitor: e.target.checked })
+                  }
+                  className="w-4 h-4"
+                />
+                <label className="text-sm font-medium">Enable Folder Monitoring</label>
+              </div>
+              <p className="text-xs text-muted-foreground mb-3">
+                When enabled, Subgen watches folders for new media files and
+                auto-processes them without needing Bazarr or Plex webhooks.
+              </p>
+
+              {settings.monitor && (
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Folders to Watch
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="/media/tv|/media/movies"
+                    value={(settings.transcribe_folders || []).join("|")}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        transcribe_folders: e.target.value
+                          .split("|")
+                          .map((s) => s.trim())
+                          .filter(Boolean),
+                      })
+                    }
+                    className="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary font-mono text-sm"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Pipe-separated container paths (e.g. /media/tv|/media/movies).
+                    These must match your Subgen volume mounts.
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className="border-t border-border pt-4 mt-4">
