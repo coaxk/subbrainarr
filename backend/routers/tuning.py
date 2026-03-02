@@ -1,20 +1,29 @@
 """
 Language tuning wizard - help users optimize subtitle settings
 
-Tracks which languages have been tuned via the wizard vs manually changed.
-The _tuned_languages set is in-memory only — resets on container restart.
-Persistence will come when we add settings.json integration.
+Tracks which languages have been tuned via the wizard. Tuning state is
+persisted in settings.json via language_configs — survives container restarts.
+The get_tuned_languages() helper derives the tuned set from persisted data.
 """
 from fastapi import APIRouter
 from pydantic import BaseModel
 from typing import List, Set
 from . import languages
+from .settings import load_settings, save_settings_to_file, LanguageConfig
 
 router = APIRouter()
 
-# Track which languages the user has tuned via the wizard.
-# Keyed by language code. In-memory only until persistence lands.
-_tuned_languages: Set[str] = set()
+
+def get_tuned_languages() -> Set[str]:
+    """Derive tuned language set from persisted language_configs.
+
+    Any language present in settings.language_configs is considered tuned.
+    This replaces the old in-memory _tuned_languages set, giving us
+    persistence across restarts for free.
+    """
+    settings = load_settings()
+    return set(settings.language_configs.keys())
+
 
 class TuningRequest(BaseModel):
     language: str
@@ -36,6 +45,9 @@ class ApplySettings(BaseModel):
     patience: float
     length_penalty: float
     beam_size: int
+
+class ResetRequest(BaseModel):
+    language_code: str
 
 @router.post("/recommend", response_model=TuningResult)
 async def get_tuning_recommendations(request: TuningRequest):
@@ -112,19 +124,28 @@ async def get_tuning_recommendations(request: TuningRequest):
 
 @router.post("/apply")
 async def apply_tuning_settings(settings: ApplySettings):
+    """Apply tuned settings to a language profile.
+
+    Updates DEFAULT_LANGUAGES in-memory (for current session) and persists
+    to settings.language_configs (for compose generation and restart survival).
     """
-    Apply tuned settings to a language profile
-    """
-    # Find and update the language in DEFAULT_LANGUAGES
-    # This updates in-memory until v1.1+ when we add persistence
     applied = False
     for lang_code, lang_data in languages.DEFAULT_LANGUAGES.items():
         if lang_data["name"] == settings.language:
+            # Update in-memory DEFAULT_LANGUAGES (immediate UI effect)
             lang_data["patience"] = settings.patience
             lang_data["length_penalty"] = settings.length_penalty
             lang_data["beam_size"] = settings.beam_size
-            # Mark this language as wizard-tuned
-            _tuned_languages.add(lang_code)
+
+            # Persist to settings.language_configs → settings.json
+            current_settings = load_settings()
+            current_settings.language_configs[lang_code] = LanguageConfig(
+                patience=settings.patience,
+                length_penalty=settings.length_penalty,
+                beam_size=settings.beam_size,
+            )
+            save_settings_to_file(current_settings)
+
             applied = True
             break
 
@@ -142,12 +163,38 @@ async def apply_tuning_settings(settings: ApplySettings):
 
 @router.post("/apply-defaults")
 async def apply_default_tuning():
-    """Mark all languages as tuned using SubBrainArr's optimized presets.
+    """Apply all languages' optimized presets to settings.language_configs.
 
-    The preset values are already set in DEFAULT_LANGUAGES — this endpoint
-    simply marks every language as 'tuned' so the UI reflects that the user
-    has accepted the defaults.
+    Writes every language's preset values into language_configs and persists
+    to disk, so compose snippet generation picks them up and tuning state
+    survives container restarts.
     """
-    for lang_code in languages.DEFAULT_LANGUAGES:
-        _tuned_languages.add(lang_code)
+    current_settings = load_settings()
+    for lang_code, lang_data in languages.DEFAULT_LANGUAGES.items():
+        current_settings.language_configs[lang_code] = LanguageConfig(
+            patience=lang_data["patience"],
+            length_penalty=lang_data["length_penalty"],
+            beam_size=lang_data.get("beam_size", 5),
+        )
+    save_settings_to_file(current_settings)
     return {"success": True, "languages_tuned": len(languages.DEFAULT_LANGUAGES)}
+
+
+@router.post("/reset")
+async def reset_tuning(request: ResetRequest):
+    """Remove a language's tuning, reverting to SubBrainArr presets.
+
+    Removes the language from settings.language_configs and persists.
+    The language list will then show DEFAULT_LANGUAGES preset values.
+    """
+    current_settings = load_settings()
+    removed = request.language_code in current_settings.language_configs
+    if removed:
+        del current_settings.language_configs[request.language_code]
+        save_settings_to_file(current_settings)
+
+    return {
+        "success": removed,
+        "language_code": request.language_code,
+        "message": f"Tuning reset for {request.language_code}" if removed else "Language was not tuned"
+    }

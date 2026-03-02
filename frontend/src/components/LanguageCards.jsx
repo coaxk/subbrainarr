@@ -184,6 +184,8 @@ export default function LanguageCards() {
         setShowDefaultsConfirm(false);
         setDefaultsBanner(true);
         setTimeout(() => setDefaultsBanner(false), 5000);
+        // Notify other components (e.g., SettingsPanel) that tuning changed
+        window.dispatchEvent(new CustomEvent("languageUpdated", { detail: { language: "all" } }));
       }
     } catch (error) {
       console.error("Failed to apply defaults:", error);

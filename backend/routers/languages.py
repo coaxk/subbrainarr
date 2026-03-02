@@ -591,29 +591,40 @@ DEFAULT_LANGUAGES = {
 async def list_languages():
     """
     Get list of all configured languages with their settings.
-    Checks tuning._tuned_languages to determine optimization_status.
+    Derives optimization_status from persisted language_configs.
+    Overlays persisted tuning values so they survive container restarts.
     """
     # Import here to avoid circular import at module level
-    from .tuning import _tuned_languages
+    from .settings import load_settings
+
+    current_settings = load_settings()
 
     languages = []
     for lang_data in DEFAULT_LANGUAGES.values():
         code = lang_data["code"]
-        # Determine optimization status from tuning tracker
-        if code in _tuned_languages:
+
+        # Start with preset defaults
+        settings_data = {**lang_data}
+
+        # Overlay persisted tuning values (survives restart even when
+        # DEFAULT_LANGUAGES has reset to code defaults)
+        if code in current_settings.language_configs:
+            lc = current_settings.language_configs[code]
+            settings_data["patience"] = lc.patience
+            settings_data["length_penalty"] = lc.length_penalty
+            settings_data["beam_size"] = lc.beam_size
             status = "tuned"
             is_opt = True
         else:
             status = "default"
             is_opt = False  # Not yet tuned by user — show as neutral
 
-        settings_data = {
-            **lang_data,
+        settings_data.update({
             "files_processed": 0,  # TODO: Track from database
             "last_used": None,     # TODO: Track from database
             "is_optimized": is_opt,
             "optimization_status": status,
-        }
+        })
         if "beam_size" not in settings_data:
             settings_data["beam_size"] = 5
 
@@ -625,20 +636,35 @@ async def list_languages():
 @router.get("/{language_code}", response_model=LanguageSettings)
 async def get_language(language_code: str):
     """
-    Get settings for a specific language
+    Get settings for a specific language.
+    Overlays persisted tuning values for restart consistency.
     """
-    from .tuning import _tuned_languages
+    from .settings import load_settings
 
     if language_code in DEFAULT_LANGUAGES:
         lang_data = DEFAULT_LANGUAGES[language_code]
-        status = "tuned" if language_code in _tuned_languages else "default"
+        current_settings = load_settings()
+
+        # Overlay persisted tuning values if this language was tuned
+        if language_code in current_settings.language_configs:
+            lc = current_settings.language_configs[language_code]
+            return LanguageSettings(
+                **{**lang_data, "patience": lc.patience,
+                   "length_penalty": lc.length_penalty,
+                   "beam_size": lc.beam_size},
+                files_processed=0,
+                last_used=None,
+                is_optimized=True,
+                optimization_status="tuned",
+            )
+
         return LanguageSettings(
             **lang_data,
             beam_size=lang_data.get("beam_size", 5),
             files_processed=0,
             last_used=None,
-            is_optimized=(status == "tuned"),
-            optimization_status=status,
+            is_optimized=False,
+            optimization_status="default",
         )
     else:
         return LanguageSettings(

@@ -31,6 +31,23 @@ export default function SettingsPanel({ pendingSubTab, onSubTabConsumed }) {
     }
   }, [pendingSubTab]);
 
+  // When the tuning wizard applies changes, re-fetch settings so the compose
+  // snippet reflects the updated language_configs / SUBGEN_KWARGS.
+  useEffect(() => {
+    const handleLanguageUpdate = () => {
+      fetchSettings();
+      // Re-fetch compose snippet if it's currently visible
+      if (composeSnippet !== null) {
+        fetch("/api/settings/compose-snippet")
+          .then((r) => r.json())
+          .then((data) => setComposeSnippet(data.snippet))
+          .catch((err) => console.error("Failed to refresh compose snippet:", err));
+      }
+    };
+    window.addEventListener("languageUpdated", handleLanguageUpdate);
+    return () => window.removeEventListener("languageUpdated", handleLanguageUpdate);
+  }, [composeSnippet]);
+
   const fetchSettings = async () => {
     setLoading(true);
     try {
