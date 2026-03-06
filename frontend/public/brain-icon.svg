@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Brain shape - left hemisphere -->
+  <path d="M30 12c-8 0-14 4-16 10-3 1-5 4-5 8 0 3 1 5 3 7-1 2-1 5 1 7 2 3 5 4 8 4h2"
+    stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" fill="#a78bfa" fill-opacity="0.15"/>
+  <!-- Brain shape - right hemisphere -->
+  <path d="M34 12c8 0 14 4 16 10 3 1 5 4 5 8 0 3-1 5-3 7 1 2 1 5-1 7-2 3-5 4-8 4h-2"
+    stroke="#818cf8" stroke-width="2.5" stroke-linecap="round" fill="#818cf8" fill-opacity="0.15"/>
+  <!-- Central fissure -->
+  <path d="M32 12v36" stroke="#c4b5fd" stroke-width="1.5" stroke-dasharray="3 2"/>
+  <!-- Neural folds - left -->
+  <path d="M22 20c4 2 6 6 6 10M16 28c3-1 7 0 10 3M18 38c4-2 8-1 11 2"
+    stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+  <!-- Neural folds - right -->
+  <path d="M42 20c-4 2-6 6-6 10M48 28c-3-1-7 0-10 3M46 38c-4-2-8-1-11 2"
+    stroke="#818cf8" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+  <!-- Spark nodes - neural activity -->
+  <circle cx="19" cy="18" r="1.5" fill="#c4b5fd"/>
+  <circle cx="45" cy="18" r="1.5" fill="#c4b5fd"/>
+  <circle cx="14" cy="32" r="1.5" fill="#a78bfa"/>
+  <circle cx="50" cy="32" r="1.5" fill="#818cf8"/>
+  <!-- Brain stem -->
+  <path d="M29 48c0 3 1 5 3 5s3-2 3-5" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" fill="none"/>
+</svg>
