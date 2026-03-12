@@ -250,6 +250,19 @@ _If three-letter agencies want your German subtitle preferences, they'll have to
 
 ---
 
+## Security
+
+Subbrainarr makes outbound HTTP requests to your Subgen instance, so it locks down what it can talk to and how.
+
+- **SSRF prevention** — All URLs are validated before any outbound request. Only `http` and `https` schemes are allowed. Resolved IPs are checked against blocked ranges: link-local (`169.254.0.0/16`), loopback (`127.0.0.0/8`), and "this network" (`0.0.0.0/8`) — preventing requests to cloud metadata endpoints or internal services.
+- **Hostname whitelist** — Docker-internal hostnames (`subgen`, `localhost`, `host.docker.internal`) are allowed through without DNS resolution. Everything else gets resolved and IP-checked first.
+- **Locked CORS** — Origins are explicit (defaults to `localhost:5918` and `localhost:9918`, configurable via `CORS_ORIGINS`). `allow_credentials` is `False`. Only `GET` and `POST` methods are permitted. No wildcard origins with credentials.
+- **Request validation** — All API endpoints use Pydantic models for type-enforced input validation. Malformed requests are rejected before reaching handler logic.
+- **Safe path encoding** — Filesystem paths passed to Subgen's batch API are URL-encoded via `urllib.parse.quote()`, preventing injection through special characters in directory names.
+- **No stored credentials** — Subbrainarr doesn't store API keys, tokens, or passwords. Connection details are validated per-request, not cached.
+
+---
+
 ## Credits
 
 **Created by:** [@coaxk](https://github.com/coaxk)
