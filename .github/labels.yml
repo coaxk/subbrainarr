@@ -1,0 +1,72 @@
+# Core
+- name: bug
+  color: d73a4a
+  description: Something isn't working
+- name: enhancement
+  color: a2eeef
+  description: New feature or request
+- name: documentation
+  color: 0075ca
+  description: Improvements or additions to documentation
+- name: security
+  color: e4e669
+  description: Security-related issue or improvement
+- name: dependencies
+  color: 0366d6
+  description: Dependency updates
+- name: breaking
+  color: b60205
+  description: Breaking change
+
+# Areas
+- name: backend
+  color: 1d76db
+  description: Python/FastAPI backend
+- name: frontend
+  color: 7057ff
+  description: React/Vite frontend
+- name: languages
+  color: 5319e7
+  description: Language data, flags, or family groupings
+- name: tuning
+  color: 006b75
+  description: Whisper tuning parameters and recommendations
+- name: docker
+  color: 2496ed
+  description: Docker, Dockerfile, or compose configuration
+- name: subgen-integration
+  color: fbca04
+  description: Subgen API integration and communication
+
+# Process
+- name: good first issue
+  color: 7057ff
+  description: Good for newcomers
+- name: help wanted
+  color: 008672
+  description: Extra attention is needed
+
+# Lifecycle
+- name: stale
+  color: ededed
+  description: No recent activity
+- name: pinned
+  color: 0e8a16
+  description: Exempt from stale bot
+- name: skip-changelog
+  color: c5def5
+  description: Exclude from release notes
+
+# Triage
+- name: duplicate
+  color: cfd3d7
+  description: This issue or pull request already exists
+- name: invalid
+  color: e4e669
+  description: This doesn't seem right
+- name: wontfix
+  color: ffffff
+  description: This will not be worked on
+- name: question
+  color: d876e3
+  description: Further information is requested

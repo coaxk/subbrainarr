@@ -1,0 +1,69 @@
+name-template: "v$RESOLVED_VERSION"
+tag-template: "v$RESOLVED_VERSION"
+template: |
+  ## What's Changed
+
+  $CHANGES
+
+  **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
+
+categories:
+  - title: "Breaking Changes"
+    labels:
+      - breaking
+  - title: "New Features"
+    labels:
+      - enhancement
+  - title: "Bug Fixes"
+    labels:
+      - bug
+  - title: "Security"
+    labels:
+      - security
+  - title: "Documentation"
+    labels:
+      - documentation
+  - title: "Dependencies"
+    labels:
+      - dependencies
+  - title: "Other Changes"
+    labels:
+      - "*"
+
+exclude-labels:
+  - skip-changelog
+
+version-resolver:
+  major:
+    labels:
+      - breaking
+  minor:
+    labels:
+      - enhancement
+  patch:
+    labels:
+      - bug
+      - security
+      - dependencies
+      - documentation
+  default: patch
+
+autolabeler:
+  - label: backend
+    files:
+      - "backend/**"
+  - label: frontend
+    files:
+      - "frontend/**"
+  - label: docker
+    files:
+      - "Dockerfile"
+      - "docker-compose.yml"
+  - label: documentation
+    files:
+      - "*.md"
+      - "docs/**"
+  - label: dependencies
+    files:
+      - "backend/requirements*.txt"
+      - "frontend/package*.json"
