@@ -27,7 +27,7 @@ jobs:
         run: docker build -t subbrainarr:scan .
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: subbrainarr:scan
           format: sarif
@@ -35,7 +35,7 @@ jobs:
           severity: CRITICAL,HIGH
 
       - name: Upload SARIF
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: trivy-results.sarif
