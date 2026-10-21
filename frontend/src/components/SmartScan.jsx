@@ -151,7 +151,7 @@ export default function SmartScan({ subgenUrl }) {
               if (e.key === "Enter" && !isAnyScanning) triggerFolderScan();
             }}
             placeholder='Enter folder name (e.g. Breaking Bad)'
-            className="flex-1 px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            className="flex-1 px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-hidden focus:ring-2 focus:ring-primary"
             disabled={isAnyScanning}
           />
           <button

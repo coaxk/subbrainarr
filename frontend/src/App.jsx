@@ -96,7 +96,7 @@ function App() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Sticky Header */}
-      <header className="sticky top-0 z-40 border-b border-border bg-card/50 backdrop-blur">
+      <header className="sticky top-0 z-40 border-b border-border bg-card/50 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -111,7 +111,7 @@ function App() {
             <div className="flex items-center gap-3">
               {/* Connection Status */}
               <div className="flex items-center gap-2">
-                <div className="relative w-2.5 h-2.5 flex-shrink-0">
+                <div className="relative w-2.5 h-2.5 shrink-0">
                   <div className="absolute inset-0 rounded-full bg-green-500 animate-ping opacity-25" />
                   <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
                 </div>
@@ -121,7 +121,7 @@ function App() {
               </div>
               {/* Version Badge */}
               {subgenInfo && subgenInfo.version && (
-                <span className="text-xs px-2 py-0.5 bg-secondary rounded-full text-muted-foreground flex-shrink-0">
+                <span className="text-xs px-2 py-0.5 bg-secondary rounded-full text-muted-foreground shrink-0">
                   Subgen {subgenInfo.version}
                   {subgenInfo.is_outdated && (
                     <span className="text-yellow-500 ml-1">update</span>
@@ -131,7 +131,7 @@ function App() {
               {/* Change Button */}
               <button
                 onClick={() => setConnectedUrl(null)}
-                className="px-3 py-1 text-xs border border-border rounded-md text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors flex-shrink-0"
+                className="px-3 py-1 text-xs border border-border rounded-md text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors shrink-0"
               >
                 Change Instance
               </button>

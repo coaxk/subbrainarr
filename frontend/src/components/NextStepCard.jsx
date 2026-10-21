@@ -16,7 +16,7 @@ export default function NextStepCard({ icon: Icon, title, description, buttonLab
   return (
     <div className="bg-primary/5 border border-primary/20 rounded-lg p-5">
       <div className="flex items-start gap-4">
-        <div className="p-2 bg-primary/10 rounded-lg flex-shrink-0">
+        <div className="p-2 bg-primary/10 rounded-lg shrink-0">
           <Icon className="w-5 h-5 text-primary" />
         </div>
         <div className="flex-1">

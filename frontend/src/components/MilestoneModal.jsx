@@ -29,7 +29,7 @@ export default function MilestoneModal({ milestone, onClose }) {
             <p className="text-sm text-muted-foreground">Files Processed</p>
           </div>
 
-          <div className="bg-gradient-to-r from-primary/20 to-purple-500/20 rounded-lg p-3 mb-4">
+          <div className="bg-linear-to-r from-primary/20 to-purple-500/20 rounded-lg p-3 mb-4">
             <p className="text-sm">
               <span className="font-semibold">Rank Unlocked:</span>{" "}
               <span className="text-primary">{milestone.rank}</span>

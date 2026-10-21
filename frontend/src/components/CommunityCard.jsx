@@ -55,7 +55,7 @@ export default function CommunityCard() {
   }
 
   return (
-    <div className="bg-gradient-to-br from-primary/10 via-card to-card border border-primary/20 rounded-lg p-6">
+    <div className="bg-linear-to-br from-primary/10 via-card to-card border border-primary/20 rounded-lg p-6">
       <div className="flex items-center gap-3 mb-4">
         <Globe className="w-6 h-6 text-primary" />
         <div>
@@ -153,7 +153,7 @@ export default function CommunityCard() {
 
       {/* Trending Badge */}
       {communityStats.trending_rank && (
-        <div className="mt-4 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 rounded-md p-3 text-center">
+        <div className="mt-4 bg-linear-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 rounded-md p-3 text-center">
           <p className="text-sm">
             🔥{" "}
             <span className="font-semibold">
