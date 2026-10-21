@@ -13,7 +13,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12", "3.13"]
+        # 3.11 is what the image runs. 3.13 returns with the pydantic bump (#26):
+        # pydantic-core 2.14.6 has no 3.13 wheel and cannot build there.
+        python-version: ["3.11", "3.12"]
 
     steps:
       - uses: actions/checkout@v4
