@@ -193,7 +193,7 @@ export default function ConnectionScreen({ onConnected }) {
               value={customUrl}
               onChange={(e) => setCustomUrl(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && testCustomUrl()}
-              className="flex-1 px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+              className="flex-1 px-3 py-2 bg-background border border-border rounded-md focus:outline-hidden focus:ring-2 focus:ring-primary"
             />
             <button
               onClick={testCustomUrl}

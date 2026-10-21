@@ -85,15 +85,15 @@ function LanguageRow({ lang, expanded, onToggle, onTune }) {
         <img
           src={getFlagUrl(lang.code)}
           alt={`${lang.name} flag`}
-          className="w-6 h-5 rounded-sm object-cover flex-shrink-0"
+          className="w-6 h-5 rounded-sm object-cover shrink-0"
         />
         <span className="font-medium flex-1 text-sm">{lang.name}</span>
         <span className="text-xs text-muted-foreground mr-2">{lang.native_name}</span>
         <StatusBadge status={lang.optimization_status} />
         {expanded ? (
-          <ChevronDown className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+          <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
         ) : (
-          <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+          <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
         )}
       </button>
 
@@ -303,7 +303,7 @@ export default function LanguageCards() {
 
       {/* Guidance */}
       <div className="mb-4 p-3 bg-blue-500/5 border border-blue-500/20 rounded-lg text-sm text-muted-foreground flex items-start gap-2">
-        <Info className="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" />
+        <Info className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
         <span>
           Each language has pre-tuned defaults for subtitle quality. Use "Tune" on any
           language to customize for your content, or "Apply Recommended Defaults" to accept
@@ -320,7 +320,7 @@ export default function LanguageCards() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search languages..."
-          className="w-full pl-9 pr-4 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          className="w-full pl-9 pr-4 py-2 bg-background border border-border rounded-md text-sm focus:outline-hidden focus:ring-2 focus:ring-primary"
         />
         {searchQuery && (
           <button

@@ -44,7 +44,7 @@ function LogLine({ line }) {
     <div className="flex gap-2 leading-relaxed">
       {badgeClass && (
         <span
-          className={`inline-block px-1 py-0 rounded text-[10px] font-bold flex-shrink-0 mt-0.5 ${badgeClass}`}
+          className={`inline-block px-1 py-0 rounded text-[10px] font-bold shrink-0 mt-0.5 ${badgeClass}`}
         >
           {level.toUpperCase()}
         </span>
@@ -199,13 +199,13 @@ export default function LogsViewer({ subgenUrl }) {
           placeholder="Search logs..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="flex-1 px-3 py-1.5 text-sm bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+          className="flex-1 px-3 py-1.5 text-sm bg-background border border-border rounded-md focus:outline-hidden focus:ring-2 focus:ring-primary"
         />
 
         <select
           value={levelFilter}
           onChange={(e) => setLevelFilter(e.target.value)}
-          className="px-2 py-1.5 text-sm bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+          className="px-2 py-1.5 text-sm bg-background border border-border rounded-md focus:outline-hidden focus:ring-2 focus:ring-primary"
         >
           <option value="all">All Levels</option>
           <option value="INFO">INFO</option>

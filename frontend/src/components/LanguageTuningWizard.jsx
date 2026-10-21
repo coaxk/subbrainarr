@@ -185,7 +185,7 @@ export default function LanguageTuningWizard({ onClose, defaultLanguage }) {
               <select
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
-                className="w-full px-4 py-3 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary mb-6"
+                className="w-full px-4 py-3 bg-background border border-border rounded-md focus:outline-hidden focus:ring-2 focus:ring-primary mb-6"
               >
                 {languages.map((lang) => (
                   <option key={lang.name} value={lang.name}>
@@ -237,7 +237,7 @@ export default function LanguageTuningWizard({ onClose, defaultLanguage }) {
                     }`}
                   >
                     <div
-                      className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                      className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 mt-0.5 ${
                         issues.includes(iss.id)
                           ? "bg-primary border-primary"
                           : "border-muted-foreground"

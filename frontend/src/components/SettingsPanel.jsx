@@ -375,7 +375,7 @@ export default function SettingsPanel({ pendingSubTab, onSubTabConsumed }) {
                 onChange={(e) =>
                   setSettings({ ...settings, whisper_model: e.target.value })
                 }
-                className="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-hidden focus:ring-2 focus:ring-primary"
               >
                 <option value="tiny">Tiny (fastest, lowest quality)</option>
                 <option value="small">Small (fast, decent quality)</option>
@@ -398,7 +398,7 @@ export default function SettingsPanel({ pendingSubTab, onSubTabConsumed }) {
                 onChange={(e) =>
                   setSettings({ ...settings, compute_type: e.target.value })
                 }
-                className="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-hidden focus:ring-2 focus:ring-primary"
               >
                 <option value="float32">
                   Float32 (highest quality, slowest)
@@ -423,7 +423,7 @@ export default function SettingsPanel({ pendingSubTab, onSubTabConsumed }) {
                     transcribe_device: e.target.value,
                   })
                 }
-                className="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-hidden focus:ring-2 focus:ring-primary"
               >
                 <option value="cuda">CUDA (NVIDIA GPU)</option>
                 <option value="cpu">CPU</option>
@@ -739,7 +739,7 @@ export default function SettingsPanel({ pendingSubTab, onSubTabConsumed }) {
                           },
                         })
                       }
-                      className="w-full px-3 py-2 pr-10 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      className="w-full px-3 py-2 pr-10 bg-background border border-border rounded-md focus:outline-hidden focus:ring-2 focus:ring-primary"
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2">
                       {getValidationIcon(validateHostPath(settings.path_mapping?.host_path || ""))}
@@ -765,7 +765,7 @@ export default function SettingsPanel({ pendingSubTab, onSubTabConsumed }) {
                           },
                         })
                       }
-                      className="w-full px-3 py-2 pr-10 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      className="w-full px-3 py-2 pr-10 bg-background border border-border rounded-md focus:outline-hidden focus:ring-2 focus:ring-primary"
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2">
                       {getValidationIcon(validateContainerPath(settings.path_mapping?.container_path || ""))}
@@ -936,7 +936,7 @@ export default function SettingsPanel({ pendingSubTab, onSubTabConsumed }) {
                       .map((s) => s.trim()),
                   })
                 }
-                className="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-hidden focus:ring-2 focus:ring-primary"
               />
               <p className="text-xs text-muted-foreground mt-1">
                 Files with these words in the filename will be skipped (comma-separated, case-insensitive)
@@ -1022,7 +1022,7 @@ export default function SettingsPanel({ pendingSubTab, onSubTabConsumed }) {
                 onChange={(e) =>
                   setSettings({ ...settings, custom_regroup: e.target.value })
                 }
-                className="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary font-mono text-sm"
+                className="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-hidden focus:ring-2 focus:ring-primary font-mono text-sm"
               />
               <p className="text-xs text-muted-foreground mt-1">
                 Advanced subtitle regrouping pattern. Leave blank for defaults.
@@ -1041,7 +1041,7 @@ export default function SettingsPanel({ pendingSubTab, onSubTabConsumed }) {
                   onChange={(e) =>
                     setSettings({ ...settings, model_path: e.target.value })
                   }
-                  className="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary font-mono text-sm"
+                  className="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-hidden focus:ring-2 focus:ring-primary font-mono text-sm"
                 />
                 <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 mt-2 text-xs">
                   <p className="font-medium text-blue-400 mb-1">Docker Mount Info</p>
@@ -1071,7 +1071,7 @@ export default function SettingsPanel({ pendingSubTab, onSubTabConsumed }) {
                       force_detected_language_to: e.target.value,
                     })
                   }
-                  className="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-hidden focus:ring-2 focus:ring-primary"
                 >
                   <option value="">Auto-detect (default)</option>
                   {availableLanguages.map((lang) => (
@@ -1122,7 +1122,7 @@ export default function SettingsPanel({ pendingSubTab, onSubTabConsumed }) {
                           .filter(Boolean),
                       })
                     }
-                    className="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary font-mono text-sm"
+                    className="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-hidden focus:ring-2 focus:ring-primary font-mono text-sm"
                   />
                   <p className="text-xs text-muted-foreground mt-1">
                     Pipe-separated container paths (e.g. /media/tv|/media/movies).
